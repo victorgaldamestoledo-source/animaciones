@@ -1,0 +1,3180 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8">
+  <!-- Meta tags obligatorios para funcionar como App PWA nativa en iPhone (iOS Safari) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Cotizador AD">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <title>Animaciones Divertidas - Cotizador Profesional</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans (UI & Moderno) + Playfair Display (Estilo Gala) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS vía CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif']
+          },
+          colors: {
+            brand: {
+              navy: '#0f172a',
+              gold: '#d4af37',
+              goldSoft: '#f5e6b3'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* =====================================================================
+       ESTILOS NATIVOS PARA iPHONE (SAFE AREAS, TÁCTIL >= 44px, SIN AUTO-ZOOM)
+    ===================================================================== */
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html, body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      overscroll-behavior-y: none;
+    }
+
+    /* Evita el auto-zoom molesto de iOS Safari en campos de formulario */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+
+    /* Áreas seguras para notch / Dynamic Island y barra Home de iPhone */
+    .safe-header {
+      padding-top: var(--safe-top);
+    }
+
+    .safe-bottom-nav {
+      padding-bottom: calc(var(--safe-bottom) + 0.35rem);
+    }
+
+    .main-content-pad {
+      padding-bottom: calc(var(--safe-bottom) + 6.25rem);
+    }
+
+    @media (min-width: 768px) {
+      .main-content-pad {
+        padding-bottom: 3.5rem;
+      }
+    }
+
+    /* Controles táctiles cómodos (>= 44px) */
+    .touch-btn {
+      min-height: 44px;
+    }
+
+    /* Switch estilo iOS */
+    .ios-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 52px;
+      height: 30px;
+      border-radius: 9999px;
+      background-color: #cbd5e1;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .ios-switch.active {
+      background-color: #10b981;
+    }
+    .ios-switch-knob {
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.22);
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateX(3px);
+    }
+    .ios-switch.active .ios-switch-knob {
+      transform: translateX(25px);
+    }
+
+    /* Animación sutil para transiciones de pestaña y modales */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up {
+      animation: fadeSlideUp 0.2s ease-out;
+    }
+
+    /* Scrollbar sutil en PC */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+
+    /* =====================================================================
+       HOJA DE ESTILOS @media print PARA GENERACIÓN DE PDF PERFECTO
+       Funciona en iPhone Safari (Compartir -> Imprimir -> PDF) y PC/Mac
+    ===================================================================== */
+    @page {
+      size: letter;
+      margin: 0.45cm;
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      #main-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      #tab-pdf {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #pdf-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+
+      #pdf-document {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .print-avoid-break {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen selection:bg-amber-200 selection:text-slate-900">
+
+  <!-- =====================================================================
+       HEADER SUPERIOR (RESPETA SAFE AREA DE iPHONE + NAVEGACIÓN EN PC)
+  ===================================================================== -->
+  <header class="no-print safe-header sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2.5">
+      <!-- Identidad de marca -->
+      <button type="button" onclick="switchTab('cotizar')" class="flex items-center gap-2.5 min-w-0 text-left focus:outline-none">
+        <div id="header-logo-container" class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-amber-400/60 bg-slate-800 shadow-sm flex items-center justify-center">
+          <!-- Render dinámico inteligente: localStorage -> logo.png -> Emblema AD -->
+        </div>
+        <div class="min-w-0">
+          <h1 id="header-brand-name" class="font-extrabold text-sm sm:text-base tracking-tight text-white truncate leading-tight">Animaciones Divertidas</h1>
+          <p id="header-brand-slogan" class="text-[11px] text-amber-300/90 font-medium truncate leading-tight">Tu evento es nuestro evento</p>
+        </div>
+      </button>
+
+      <!-- Navegación Desktop (oculta en celular) -->
+      <nav class="hidden md:flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700/70" aria-label="Menú principal escritorio">
+        <button type="button" data-nav="cotizar" onclick="switchTab('cotizar')" class="nav-desktop-btn touch-btn px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
+          <span>📝</span> Cotizar
+        </button>
+        <button type="button" data-nav="pdf" onclick="switchTab('pdf')" class="nav-desktop-btn touch-btn px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
+          <span>📄</span> PDF
+        </button>
+        <button type="button" data-nav="historial" onclick="switchTab('historial')" class="nav-desktop-btn touch-btn px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
+          <span>🗂️</span> Historial
+          <span id="badge-history-desktop" class="hidden text-[11px] bg-amber-400 text-slate-950 font-extrabold px-1.5 py-0.5 rounded-full leading-none">0</span>
+        </button>
+        <button type="button" data-nav="ajustes" onclick="switchTab('ajustes')" class="nav-desktop-btn touch-btn px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
+          <span>⚙️</span> Ajustes
+        </button>
+      </nav>
+
+      <!-- Botón rápido Nueva Cotización -->
+      <button type="button" onclick="startNewQuote(true)" class="touch-btn flex-shrink-0 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-95 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        <span>Nueva</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       CONTENEDOR PRINCIPAL DE LAS 4 PESTAÑAS
+  ===================================================================== -->
+  <main id="main-container" class="max-w-7xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 main-content-pad">
+
+    <!-- ===================================================================
+         MÓDULO 1: COTIZAR
+    ==================================================================== -->
+    <section id="tab-cotizar" class="tab-section animate-fade-up">
+
+      <!-- Banner indicador si estamos editando una cotización existente -->
+      <div id="editing-banner" class="hidden mb-4 bg-indigo-50 border border-indigo-200 text-indigo-950 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-sm">
+          <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">✎</span>
+          <span>Editando cotización <strong id="editing-folio">AD-2026-001</strong></span>
+        </div>
+        <button type="button" onclick="startNewQuote(true)" class="text-xs font-bold text-indigo-700 hover:text-indigo-900 underline py-1">Crear una nueva</button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- COLUMNA IZQUIERDA (FORMULARIO) -->
+        <div class="lg:col-span-8 space-y-5">
+
+          <!-- 1. TIPO DE EVENTO (10 CATEGORÍAS PRECARGADAS) -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+              <div>
+                <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center text-xs font-extrabold">1</span>
+                  Tipo de Evento
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">Toca una categoría para cargar tarifa base, horas, descripción y estilo PDF.</p>
+              </div>
+              <button type="button" onclick="restoreCategoryDefaults()" class="touch-btn text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-2 rounded-xl transition active:scale-95">
+                ↺ Restaurar base
+              </button>
+            </div>
+
+            <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+              <!-- Botones generados dinámicamente -->
+            </div>
+          </div>
+
+          <!-- 2. DATOS DEL CLIENTE Y DEL EVENTO -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-4">
+              <span class="w-7 h-7 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center text-xs font-extrabold">2</span>
+              Cliente y Coordenadas del Evento
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2 md:col-span-1">
+                <label for="q-client-name" class="block text-xs font-bold text-slate-600 mb-1.5">Nombre del Cliente / Novios / Empresa *</label>
+                <input id="q-client-name" type="text" placeholder="Ej: Francisca y Matías / Familia Pérez" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition">
+              </div>
+
+              <div>
+                <label for="q-client-phone" class="block text-xs font-bold text-slate-600 mb-1.5">WhatsApp / Teléfono</label>
+                <input id="q-client-phone" type="tel" placeholder="+56 9 1234 5678" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition">
+              </div>
+
+              <div>
+                <label for="q-client-email" class="block text-xs font-bold text-slate-600 mb-1.5">Correo Electrónico (opcional)</label>
+                <input id="q-client-email" type="email" placeholder="cliente@correo.cl" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition">
+              </div>
+
+              <div>
+                <label for="q-guests" class="block text-xs font-bold text-slate-600 mb-1.5">Cantidad Estimada de Invitados (opcional)</label>
+                <input id="q-guests" type="text" placeholder="Ej: 120 personas / 50 invitados" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition">
+              </div>
+
+              <div>
+                <label for="q-event-date" class="block text-xs font-bold text-slate-600 mb-1.5">Fecha del Evento *</label>
+                <input id="q-event-date" type="date" onchange="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition">
+                <p id="q-date-preview" class="text-xs text-amber-700 font-semibold mt-1 min-h-[16px]"></p>
+              </div>
+
+              <div>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label for="q-start-time" class="block text-xs font-bold text-slate-600 mb-1.5">Hora Inicio</label>
+                    <input id="q-start-time" type="time" onchange="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3 py-2.5 outline-none transition">
+                  </div>
+                  <div>
+                    <label for="q-end-time" class="block text-xs font-bold text-slate-600 mb-1.5">Hora Término</label>
+                    <input id="q-end-time" type="time" onchange="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3 py-2.5 outline-none transition">
+                  </div>
+                </div>
+                <p id="q-duration-badge" class="mt-1.5 inline-flex items-center gap-1.5 text-xs text-slate-600 bg-slate-100 rounded-lg px-2.5 py-1 font-medium">
+                  ⏱️ Duración: <strong>—</strong>
+                </p>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="q-location" class="block text-xs font-bold text-slate-600 mb-1.5">Lugar / Recinto / Comuna</label>
+                <input id="q-location" type="text" placeholder="Ej: Centro de Eventos El Faro, La Serena" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. PERSONALIZACIÓN DEL SERVICIO Y GARANTÍAS -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-4">
+              <span class="w-7 h-7 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center text-xs font-extrabold">3</span>
+              Personalización del Servicio
+            </h2>
+
+            <div class="space-y-4">
+              <div>
+                <label for="q-service-title" class="block text-xs font-bold text-slate-600 mb-1.5">Título del Servicio en el PDF</label>
+                <input id="q-service-title" type="text" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 font-semibold outline-none transition">
+              </div>
+
+              <div>
+                <label for="q-service-desc" class="block text-xs font-bold text-slate-600 mb-1.5">Descripción Profesional Detallada (editable para cada cliente)</label>
+                <textarea id="q-service-desc" rows="4" oninput="syncFormToDraft()" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition leading-relaxed"></textarea>
+              </div>
+
+              <!-- Interruptores de Garantías -->
+              <div class="pt-3 border-t border-slate-100 space-y-3.5">
+                <div class="flex items-center justify-between gap-3 bg-slate-50/80 rounded-xl p-3 border border-slate-200/70">
+                  <div>
+                    <p class="text-sm font-bold text-slate-800">🛡️ Ambiente 100% familiar (sin humor doble sentido)</p>
+                    <p class="text-xs text-slate-500">Agrega una garantía explícita de conducción respetuosa en el PDF.</p>
+                  </div>
+                  <button type="button" id="toggle-family" onclick="toggleDraftFlag('familyFriendly')" role="switch" aria-checked="true" class="ios-switch active">
+                    <span class="ios-switch-knob"></span>
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between gap-3 bg-slate-50/80 rounded-xl p-3 border border-slate-200/70">
+                  <div>
+                    <p class="text-sm font-bold text-slate-800">🎥 Incluir videollamada previa de planificación y asesoría por WhatsApp</p>
+                    <p class="text-xs text-slate-500">Destaca este valor agregado profesional en la propuesta PDF.</p>
+                  </div>
+                  <button type="button" id="toggle-videocall" onclick="toggleDraftFlag('includeVideocall')" role="switch" aria-checked="true" class="ios-switch active">
+                    <span class="ios-switch-knob"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. MONTOS, EXTRAS Y CONDICIONES (CLP) -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-4">
+              <span class="w-7 h-7 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center text-xs font-extrabold">4</span>
+              Montos, Extras y Condiciones (CLP)
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="q-base-price" class="block text-xs font-bold text-slate-600 mb-1.5">Valor Base del Servicio ($ CLP)</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold">$</span>
+                  <input id="q-base-price" type="number" inputmode="numeric" min="0" step="1000" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 pl-8 pr-3.5 py-2.5 font-bold outline-none transition">
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="q-transport" class="block text-xs font-bold text-slate-600">Traslado / Movilización ($ CLP)</label>
+                  <button type="button" onclick="setTransportZero()" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-lg transition">$0 / Incluido</button>
+                </div>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold">$</span>
+                  <input id="q-transport" type="number" inputmode="numeric" min="0" step="1000" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 pl-8 pr-3.5 py-2.5 font-bold outline-none transition">
+                </div>
+              </div>
+            </div>
+
+            <!-- Extras rápidos en chips -->
+            <div class="mt-5 pt-4 border-t border-slate-100">
+              <p class="text-xs font-bold text-slate-600 mb-2">Extras rápidos (toca para sumar o quitar):</p>
+              <div id="quick-extras-chips" class="flex flex-wrap gap-2">
+                <!-- Chips dinámicos -->
+              </div>
+
+              <!-- Lista de extras activos en esta cotización -->
+              <div id="active-extras-list" class="mt-3 space-y-2">
+                <!-- Extras editables -->
+              </div>
+
+              <!-- Agregar extra personalizado -->
+              <div class="mt-3 bg-slate-50 rounded-xl p-3 border border-slate-200/80">
+                <p class="text-xs font-bold text-slate-600 mb-2">+ Agregar ítem / extra personalizado</p>
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                  <input id="custom-extra-name" type="text" placeholder="Ej: Cotillón luminoso / Animación extra" class="touch-btn sm:col-span-6 rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:border-amber-500">
+                  <div class="relative sm:col-span-3">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                    <input id="custom-extra-price" type="number" inputmode="numeric" min="0" step="1000" placeholder="25000" class="touch-btn w-full rounded-xl border border-slate-300 bg-white pl-7 pr-3 py-2 outline-none focus:border-amber-500">
+                  </div>
+                  <button type="button" onclick="addCustomExtra()" class="touch-btn sm:col-span-3 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold rounded-xl px-3 py-2 text-sm transition">
+                    + Agregar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Descuento, Abono y Validez -->
+            <div class="mt-5 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="q-discount" class="block text-xs font-bold text-slate-600 mb-1.5">Descuento ($ CLP)</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-rose-500 font-extrabold">-$</span>
+                  <input id="q-discount" type="number" inputmode="numeric" min="0" step="1000" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-rose-400 focus:ring-2 focus:ring-rose-100 pl-9 pr-3 py-2.5 font-bold text-rose-700 outline-none transition">
+                </div>
+              </div>
+
+              <div>
+                <label for="q-deposit" class="block text-xs font-bold text-slate-600 mb-1.5">Abono para Reserva ($ CLP)</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-600 font-extrabold">$</span>
+                  <input id="q-deposit" type="number" inputmode="numeric" min="0" step="1000" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 pl-8 pr-3 py-2.5 font-bold text-emerald-700 outline-none transition">
+                </div>
+              </div>
+
+              <div>
+                <label for="q-validity" class="block text-xs font-bold text-slate-600 mb-1.5">Validez Cotización (días)</label>
+                <input id="q-validity" type="number" inputmode="numeric" min="1" max="120" oninput="syncFormToDraft()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 font-bold outline-none transition">
+              </div>
+            </div>
+
+            <!-- Notas / Condiciones editables -->
+            <div class="mt-4">
+              <label for="q-notes" class="block text-xs font-bold text-slate-600 mb-1.5">Notas y Condiciones Comerciales (aparecen en el PDF)</label>
+              <textarea id="q-notes" rows="3" oninput="syncFormToDraft()" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition leading-relaxed"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: RESUMEN FINANCIERO EN VIVO -->
+        <div class="lg:col-span-4 lg:sticky lg:top-20 space-y-4">
+          <div class="bg-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 p-5 relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-36 h-36 rounded-full bg-amber-400/15 blur-2xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-amber-400">Resumen Financiero</span>
+              <span id="live-folio" class="text-xs font-mono font-bold bg-slate-800 text-amber-200 px-2.5 py-1 rounded-lg border border-slate-700">AD-2026-001</span>
+            </div>
+
+            <div class="space-y-2.5 text-sm">
+              <div class="flex justify-between text-slate-300">
+                <span>Servicio base</span>
+                <span id="sum-base" class="font-bold text-white">$0</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Traslado / Movilización</span>
+                <span id="sum-transport" class="font-bold text-emerald-400">Incluido ($0)</span>
+              </div>
+              <div id="sum-extras-row" class="hidden flex justify-between text-slate-300">
+                <span>Extras (<span id="sum-extras-count">0</span>)</span>
+                <span id="sum-extras" class="font-bold text-white">$0</span>
+              </div>
+              <div id="sum-discount-row" class="hidden flex justify-between text-rose-300">
+                <span>Descuento aplicado</span>
+                <span id="sum-discount" class="font-bold">-$0</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-700/80 flex items-baseline justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">TOTAL FINAL</span>
+              <span id="sum-total" class="text-3xl font-extrabold tracking-tight text-amber-400">$0</span>
+            </div>
+
+            <div class="mt-4 bg-slate-800/85 rounded-xl p-3.5 border border-slate-700/70 space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-300">Abono para reservar fecha:</span>
+                <span id="sum-deposit" class="font-extrabold text-emerald-400 text-sm">$20.000</span>
+              </div>
+              <div class="flex justify-between items-center pt-1.5 border-t border-slate-700/70">
+                <span class="text-slate-300">Saldo día del evento:</span>
+                <span id="sum-balance" class="font-extrabold text-white text-sm">$0</span>
+              </div>
+            </div>
+
+            <!-- Botones de acción principales -->
+            <div class="mt-5 space-y-2.5">
+              <button type="button" onclick="saveAndPreviewPDF()" class="touch-btn w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-[0.98] text-slate-950 font-extrabold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm sm:text-base">
+                <span>📄</span> Ver PDF Profesional
+              </button>
+
+              <button type="button" onclick="saveQuoteOnly()" class="touch-btn w-full bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-white border border-slate-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                <span>💾</span> Guardar Cotización
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 leading-relaxed shadow-sm">
+            <p class="font-bold text-slate-900 mb-1">📱 Uso en ambos iPhone</p>
+            <p>Al guardar o aceptar una cotización, si tienes conectada tu URL de Google Apps Script en <strong>Ajustes</strong>, se sincroniza automáticamente para que tú y tu señora vean la misma información.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         MÓDULO 2: VISTA PDF PROFESIONAL (4 ESTILOS + PRINT + WHATSAPP + 1 CLIC)
+    ==================================================================== -->
+    <section id="tab-pdf" class="tab-section hidden animate-fade-up">
+
+      <!-- Barra de controles sobre la vista previa (oculta al imprimir) -->
+      <div class="no-print bg-white rounded-2xl shadow-sm border border-slate-200/90 p-3.5 sm:p-4 mb-5 space-y-3.5">
+        <!-- Selector de los 4 estilos visuales -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Estilo visual del PDF:</span>
+          <div class="grid grid-cols-2 sm:flex items-center gap-2">
+            <button type="button" onclick="setPdfStyle('gala')" data-style-btn="gala" class="pdf-style-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-gradient-to-tr from-[#0f172a] to-[#d4af37] border border-amber-500"></span> Gala
+            </button>
+            <button type="button" onclick="setPdfStyle('corporativo')" data-style-btn="corporativo" class="pdf-style-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-gradient-to-tr from-slate-700 to-indigo-500"></span> Corporativo
+            </button>
+            <button type="button" onclick="setPdfStyle('celebracion')" data-style-btn="celebracion" class="pdf-style-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-gradient-to-tr from-purple-700 via-fuchsia-500 to-amber-400"></span> Celebración
+            </button>
+            <button type="button" onclick="setPdfStyle('tierno')" data-style-btn="tierno" class="pdf-style-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-gradient-to-tr from-rose-300 via-amber-100 to-emerald-500 border border-rose-300"></span> Tierno
+            </button>
+          </div>
+        </div>
+
+        <!-- Botones de acción PDF -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2.5 border-t border-slate-100">
+          <button type="button" onclick="printQuotePDF()" class="touch-btn bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-extrabold py-3 px-4 rounded-xl shadow-sm transition flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <span>🖨️</span> Guardar / Imprimir PDF
+          </button>
+
+          <button type="button" onclick="sendQuoteWhatsApp()" class="touch-btn bg-[#25D366] hover:bg-[#20bd5a] active:scale-[0.98] text-slate-950 font-extrabold py-3 px-4 rounded-xl shadow-sm transition flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <span>💬</span> Enviar por WhatsApp
+          </button>
+
+          <button type="button" onclick="copyWhatsAppSummary()" class="touch-btn bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-800 border border-slate-300 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <span>📋</span> Copiar texto WhatsApp
+          </button>
+
+          <button id="pdf-accept-btn" type="button" onclick="acceptAndScheduleCurrent()" class="touch-btn bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-extrabold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <span>📅</span> Aceptar y Agendar
+          </button>
+        </div>
+
+        <p class="text-[11px] text-slate-500 leading-snug">
+          📱 <strong>Tip iPhone:</strong> Toca <em>"Guardar / Imprimir PDF"</em> → en la vista previa toca el ícono <strong>Compartir ↑</strong> arriba → elige <em>WhatsApp</em> o <em>Guardar en Archivos</em>.
+        </p>
+      </div>
+
+      <!-- Documento PDF renderizado -->
+      <div id="pdf-wrapper" class="flex justify-center">
+        <article id="pdf-document" class="w-full max-w-[820px] bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+          <!-- Renderizado dinámicamente según el tema activo -->
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         MÓDULO 3: HISTORIAL Y RESERVA EN 1 CLIC
+    ==================================================================== -->
+    <section id="tab-historial" class="tab-section hidden animate-fade-up space-y-4">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-extrabold text-slate-900">Historial de Cotizaciones</h2>
+            <p class="text-xs text-slate-500">Busca, edita, duplica o reserva fechas en Google Calendar con 1 clic.</p>
+          </div>
+
+          <button type="button" onclick="syncQuotesFromCloud(false)" id="btn-sync-cloud" class="touch-btn bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+            <span id="sync-icon">☁️</span>
+            <span>Sincronizar nube</span>
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          <!-- Filtros -->
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="setHistoryFilter('all')" data-hfilter="all" class="hfilter-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Todas (<span id="count-all">0</span>)</button>
+            <button type="button" onclick="setHistoryFilter('pendiente')" data-hfilter="pendiente" class="hfilter-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Pendientes / Enviadas (<span id="count-pendiente">0</span>)</button>
+            <button type="button" onclick="setHistoryFilter('aceptada')" data-hfilter="aceptada" class="hfilter-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Aceptadas (<span id="count-aceptada">0</span>)</button>
+          </div>
+
+          <!-- Buscador -->
+          <div class="relative w-full sm:w-72">
+            <input id="history-search" type="search" placeholder="Buscar cliente, evento o folio..." oninput="renderHistory()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-amber-500 pl-9 pr-3 py-2 outline-none transition">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas de cotizaciones -->
+      <div id="history-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Renderizado dinámico -->
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         MÓDULO 4: AJUSTES (100% CONFIGURABLE DESDE EL iPHONE)
+    ==================================================================== -->
+    <section id="tab-ajustes" class="tab-section hidden animate-fade-up space-y-5">
+
+      <!-- 4.1 IDENTIDAD, LOGO Y DATOS BANCARIOS -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+        <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-4">
+          <span>🎨</span> Identidad de Marca, Logo y Datos Bancarios
+        </h2>
+
+        <!-- Carga inteligente de Logo -->
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 mb-5 flex flex-col sm:flex-row items-center gap-4">
+          <div id="cfg-logo-preview" class="w-24 h-24 rounded-full overflow-hidden bg-slate-900 border-2 border-amber-400/80 flex items-center justify-center flex-shrink-0 shadow-md">
+            <!-- Vista previa inteligente -->
+          </div>
+          <div class="flex-1 text-center sm:text-left">
+            <h3 class="text-sm font-extrabold text-slate-900">Logo de Animaciones Divertidas</h3>
+            <p class="text-xs text-slate-500 mt-0.5 mb-3">Puedes subir tu logo desde la galería del iPhone (se comprime automáticamente) o usar el archivo <code class="bg-slate-200/70 px-1 rounded">logo.png</code> de tu carpeta.</p>
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <label class="touch-btn cursor-pointer bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition inline-flex items-center gap-1.5">
+                <span>📷</span> Subir desde galería
+                <input id="cfg-logo-input" type="file" accept="image/*" onchange="handleLogoUpload(event)" class="hidden">
+              </label>
+              <button type="button" onclick="useDefaultLogoPng()" class="touch-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold px-3.5 py-2.5 rounded-xl transition">
+                ↺ Usar logo.png por defecto
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Nombre de la Empresa</label>
+            <input id="cfg-brand-name" type="text" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Eslogan</label>
+            <input id="cfg-brand-slogan" type="text" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Animador Principal</label>
+            <input id="cfg-host" type="text" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Ubicación / Ciudad</label>
+            <input id="cfg-city" type="text" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">WhatsApp Oficial</label>
+            <input id="cfg-whatsapp" type="text" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Instagram</label>
+            <input id="cfg-instagram" type="text" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Abono por Defecto ($ CLP)</label>
+            <input id="cfg-default-deposit" type="number" inputmode="numeric" step="1000" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Validez por Defecto (días)</label>
+            <input id="cfg-default-validity" type="number" inputmode="numeric" min="1" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Condiciones Comerciales Base (se precargan en cada cotización)</label>
+            <textarea id="cfg-default-terms" rows="3" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500 leading-relaxed"></textarea>
+          </div>
+        </div>
+
+        <!-- Datos de Transferencia Bancaria -->
+        <div class="mt-5 pt-5 border-t border-slate-100">
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900">Mostrar datos de transferencia bancaria en el PDF</h3>
+              <p class="text-xs text-slate-500">Activa este interruptor para incluir tus datos de depósito al pie de cada cotización.</p>
+            </div>
+            <button type="button" id="toggle-show-bank" onclick="toggleShowBank()" role="switch" class="ios-switch">
+              <span class="ios-switch-knob"></span>
+            </button>
+          </div>
+
+          <div id="bank-fields-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 transition-opacity">
+            <input id="cfg-bank-name" type="text" placeholder="Banco (Ej: Banco Estado)" class="touch-btn rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+            <input id="cfg-bank-type" type="text" placeholder="Tipo de Cuenta (Ej: CuentaRUT / Vista)" class="touch-btn rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+            <input id="cfg-bank-number" type="text" placeholder="N° de Cuenta" class="touch-btn rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+            <input id="cfg-bank-holder" type="text" placeholder="Titular de la Cuenta" class="touch-btn rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+            <input id="cfg-bank-rut" type="text" placeholder="RUT Titular" class="touch-btn rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+            <input id="cfg-bank-email" type="email" placeholder="Correo para comprobante" class="touch-btn rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="mt-5 flex justify-end">
+          <button type="button" onclick="saveBrandConfig()" class="touch-btn w-full sm:w-auto bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-extrabold px-6 py-3 rounded-xl shadow transition text-sm">
+            💾 Guardar Identidad y Datos
+          </button>
+        </div>
+      </div>
+
+      <!-- 4.2 EDITOR DE TARIFAS, SERVICIOS Y EXTRAS RÁPIDOS -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
+              <span>💰</span> Tarifas y Servicios (10 Categorías)
+            </h2>
+            <p class="text-xs text-slate-500">Modifica precios base, horas, descripciones y extras rápidos en cualquier momento.</p>
+          </div>
+          <button type="button" onclick="confirmResetCatalog()" class="touch-btn text-xs font-bold text-slate-600 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 px-3 py-2 rounded-xl transition">
+            ↺ Restaurar catálogo original
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div class="md:col-span-4">
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Categoría a editar:</label>
+            <select id="cfg-cat-select" onchange="loadCategoryEditor()" class="touch-btn w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 font-bold outline-none focus:border-amber-500">
+              <!-- Opciones dinámicas -->
+            </select>
+          </div>
+
+          <div class="md:col-span-8 bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Tarifa Base ($ CLP)</label>
+                <input id="cfg-cat-price" type="number" inputmode="numeric" step="1000" class="touch-btn w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold outline-none focus:border-amber-500">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Horas Base</label>
+                <input id="cfg-cat-hours" type="number" inputmode="numeric" min="1" max="24" class="touch-btn w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold outline-none focus:border-amber-500">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Tema PDF Sugerido</label>
+                <select id="cfg-cat-style" class="touch-btn w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold outline-none focus:border-amber-500">
+                  <option value="gala">Gala</option>
+                  <option value="corporativo">Corporativo</option>
+                  <option value="celebracion">Celebración</option>
+                  <option value="tierno">Tierno</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Descripción Profesional Base</label>
+              <textarea id="cfg-cat-desc" rows="4" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:border-amber-500 leading-relaxed"></textarea>
+            </div>
+
+            <div class="flex justify-end">
+              <button type="button" onclick="saveCategoryEditor()" class="touch-btn bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-sm transition">
+                ✓ Guardar cambios de categoría
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gestión de Extras Rápidos -->
+        <div class="mt-6 pt-5 border-t border-slate-100">
+          <h3 class="text-sm font-extrabold text-slate-900 mb-2.5">Extras Rápidos (Chips en Cotizar)</h3>
+          <div id="cfg-extras-list" class="space-y-2 mb-3">
+            <!-- Lista dinámica -->
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <input id="cfg-new-extra-name" type="text" placeholder="Nombre nuevo extra (Ej: Máquina de burbujas)" class="touch-btn sm:col-span-6 rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:border-amber-500">
+            <input id="cfg-new-extra-price" type="number" inputmode="numeric" step="1000" placeholder="Monto CLP" class="touch-btn sm:col-span-3 rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:border-amber-500">
+            <button type="button" onclick="addCatalogExtra()" class="touch-btn sm:col-span-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-3 py-2 text-sm transition">+ Añadir Extra</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.3 CONEXIÓN GOOGLE CALENDAR + SINCRONIZACIÓN 2 iPHONE -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+        <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-1">
+          <span>📅</span> Google Calendar + Sincronización 2 iPhone
+        </h2>
+        <p class="text-xs text-slate-500 mb-4">Conecta tu Web App de Google Apps Script para agendar en 1 clic en <strong>Animaciones Divertidas</strong> y compartir el historial entre tu iPhone y el de tu señora.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">URL del Web App de Google Apps Script</label>
+            <input id="cfg-gas-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-emerald-500 font-mono text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5">Nombre exacto del Calendario</label>
+            <input id="cfg-calendar-name" type="text" placeholder="Animaciones Divertidas" class="touch-btn w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none focus:border-emerald-500">
+          </div>
+          <div class="flex items-end">
+            <button type="button" onclick="saveCalendarConfig()" class="touch-btn w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-extrabold px-4 py-2.5 rounded-xl shadow-sm transition text-sm">
+              💾 Guardar Conexión
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button type="button" onclick="testCalendarConnection()" class="touch-btn bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+            <span>⚡</span> Probar conexión
+          </button>
+          <button type="button" onclick="syncQuotesFromCloud(false)" class="touch-btn bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+            <span>☁️</span> Sincronizar cotizaciones ahora
+          </button>
+        </div>
+
+        <!-- Bloque expandible con código completo de Google Apps Script (doPost y doGet) -->
+        <details class="mt-5 rounded-2xl border border-indigo-200 bg-indigo-50/50 overflow-hidden group">
+          <summary class="touch-btn cursor-pointer px-4 py-3.5 font-extrabold text-xs sm:text-sm text-indigo-950 flex items-center justify-between list-none select-none">
+            <span class="flex items-center gap-2">📘 Ver guía y código completo de Google Apps Script (Calendar + 2 iPhone)</span>
+            <span class="text-indigo-600 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <div class="px-4 pb-4 pt-1 border-t border-indigo-200/70 space-y-3">
+            <ol class="text-xs text-slate-700 space-y-1.5 list-decimal pl-5 leading-relaxed">
+              <li>Abre <strong>Google Sheets</strong> (sheets.google.com) con la cuenta donde está tu calendario <strong>"Animaciones Divertidas"</strong> y crea una hoja en blanco llamada <em>"Cotizaciones Animaciones Divertidas"</em>.</li>
+              <li>En el menú superior ve a <strong>Extensiones → Apps Script</strong>.</li>
+              <li>Borra todo el contenido, pega el código de abajo y haz clic en <strong>Guardar (💾)</strong>.</li>
+              <li>Haz clic en <strong>Implementar → Nueva implementación → Tipo: Aplicación web</strong>.</li>
+              <li>En <em>"Ejecutar como"</em> elige <strong>Yo</strong> y en <em>"Quién tiene acceso"</em> elige <strong>Cualquier usuario</strong>.</li>
+              <li>Autoriza los permisos (Calendar y Sheets), copia la <strong>URL de la aplicación web</strong> y pégala arriba en <strong>ambos iPhone</strong>.</li>
+            </ol>
+
+            <div class="relative">
+              <pre id="apps-script-preview" class="bg-slate-900 text-emerald-300 text-[11px] p-3.5 rounded-xl overflow-x-auto max-h-64 font-mono leading-relaxed"></pre>
+            </div>
+
+            <button type="button" onclick="copyAppsScriptCode()" class="touch-btn w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white font-extrabold text-sm py-3 rounded-xl shadow transition flex items-center justify-center gap-2">
+              <span>📋</span> Copiar código Google Apps Script (1 clic)
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <!-- 4.4 RESPALDO JSON MANUAL -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6">
+        <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-1">
+          <span>🔄</span> Respaldo Manual (Archivo JSON)
+        </h2>
+        <p class="text-xs text-slate-500 mb-4">Exporta toda tu configuración, logo, tarifas e historial en un archivo <code>.json</code> o impórtalo en otro dispositivo.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button type="button" onclick="exportBackupJSON()" class="touch-btn bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold text-sm py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+            <span>⬇️</span> Exportar respaldo (.json)
+          </button>
+
+          <label class="touch-btn cursor-pointer bg-amber-100 hover:bg-amber-200 active:scale-95 text-amber-950 font-extrabold text-sm py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 border border-amber-300">
+            <span>⬆️</span> Cargar respaldo (.json)
+            <input id="import-json-input" type="file" accept=".json,application/json" onchange="handleImportJSON(event)" class="hidden">
+          </label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =====================================================================
+       BARRA INFERIOR DE NAVEGACIÓN (SOLO MÓVIL / iPHONE CON SAFE AREA)
+  ===================================================================== -->
+  <nav class="no-print safe-bottom-nav md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200 shadow-[0_-4px_24px_rgba(15,23,42,0.08)]" aria-label="Menú inferior móvil">
+    <div class="grid grid-cols-4 h-16 max-w-lg mx-auto">
+      <button type="button" data-nav-m="cotizar" onclick="switchTab('cotizar')" class="nav-mobile-btn flex flex-col items-center justify-center gap-0.5 transition">
+        <span class="text-xl leading-none">📝</span>
+        <span class="text-[11px] font-bold">Cotizar</span>
+      </button>
+      <button type="button" data-nav-m="pdf" onclick="switchTab('pdf')" class="nav-mobile-btn flex flex-col items-center justify-center gap-0.5 transition">
+        <span class="text-xl leading-none">📄</span>
+        <span class="text-[11px] font-bold">PDF</span>
+      </button>
+      <button type="button" data-nav-m="historial" onclick="switchTab('historial')" class="nav-mobile-btn relative flex flex-col items-center justify-center gap-0.5 transition">
+        <span class="text-xl leading-none">🗂️</span>
+        <span class="text-[11px] font-bold">Historial</span>
+        <span id="badge-history-mobile" class="hidden absolute top-1.5 right-4 min-w-[18px] h-[18px] px-1 bg-amber-500 text-slate-950 text-[10px] font-extrabold rounded-full flex items-center justify-center">0</span>
+      </button>
+      <button type="button" data-nav-m="ajustes" onclick="switchTab('ajustes')" class="nav-mobile-btn flex flex-col items-center justify-center gap-0.5 transition">
+        <span class="text-xl leading-none">⚙️</span>
+        <span class="text-[11px] font-bold">Ajustes</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =====================================================================
+       MODAL REUTILIZABLE (SIN alert() NI confirm())
+  ===================================================================== -->
+  <div id="modal-backdrop" class="no-print hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) closeModal()">
+    <div id="modal-card" class="bg-white w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 p-5 sm:p-6 animate-fade-up">
+      <!-- Contenido dinámico -->
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       CONTENEDOR DE TOASTS (NOTIFICACIONES ELEGANTES)
+  ===================================================================== -->
+  <div id="toast-container" class="no-print fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md pointer-events-none space-y-2"></div>
+
+  <!-- =====================================================================
+       JAVASCRIPT COMPLETO (AUTOCONTENIDO Y MODULAR)
+  ===================================================================== -->
+  <script>
+    'use strict';
+
+    /* -------------------------------------------------------------------
+       1. CATÁLOGO PRECARGADO DE ANIMACIONES DIVERTIDAS
+    ------------------------------------------------------------------- */
+    const STORAGE_KEY = 'ad_cotizador_ios_pro_v2';
+
+    const DEFAULT_CATEGORIES = [
+      {
+        id: 'matrimonio',
+        name: 'Matrimonio',
+        icon: '💍',
+        basePrice: 180000,
+        hours: 8,
+        pdfStyle: 'gala',
+        description: 'Conducción profesional de recepción y protocolos, bienvenida a los novios, dinámicas elegantes y entretenidas para invitados, coordinación de tiempos con DJ y banquetería, videollamada previa de planificación y asesoría continua por WhatsApp.'
+      },
+      {
+        id: 'quince',
+        name: 'Fiesta de 15 Años',
+        icon: '👑',
+        basePrice: 160000,
+        hours: 5,
+        pdfStyle: 'gala',
+        description: 'Animación juvenil y energética, presentación oficial de la quinceañera, vals, brindis, concursos dinámicos y coordinación de sorpresas familiares.'
+      },
+      {
+        id: 'baby_shower',
+        name: 'Baby Shower',
+        icon: '🍼',
+        basePrice: 90000,
+        hours: 3,
+        pdfStyle: 'tierno',
+        description: 'Animación cálida, cercana y divertida con juegos clásicos y modernos adaptados para toda la familia, dinámicas especiales para los futuros papás y ambiente acogedor.'
+      },
+      {
+        id: 'revelacion',
+        name: 'Revelación de Género',
+        icon: '🎈',
+        basePrice: 90000,
+        hours: 3,
+        pdfStyle: 'tierno',
+        description: 'Conducción emotiva llena de suspenso, juegos interactivos por equipos (Team Niño vs. Team Niña), conteo regresivo profesional y coordinación del gran momento.'
+      },
+      {
+        id: 'cumpleanos',
+        name: 'Cumpleaños',
+        icon: '🎂',
+        basePrice: 100000,
+        hours: 3,
+        pdfStyle: 'celebracion',
+        description: 'Animación versátil para cumpleaños infantiles o adultos, concursos participativos, juegos musicales, animación del momento de la torta y excelente energía de principio a fin.'
+      },
+      {
+        id: 'empresas',
+        name: 'Empresas / Corporativo',
+        icon: '🏢',
+        basePrice: 200000,
+        hours: 4,
+        pdfStyle: 'corporativo',
+        description: 'Maestría de ceremonias ejecutiva para galas, cenas de fin de año, aniversarios, premiaciones, sorteos y dinámicas de integración respetuosas y de alto nivel.'
+      },
+      {
+        id: 'navidad',
+        name: 'Navidad / Colegios',
+        icon: '🎄',
+        basePrice: 120000,
+        hours: 3,
+        pdfStyle: 'celebracion',
+        description: 'Animación navideña para establecimientos educacionales, empresas y comunidades, concursos familiares, entrega de regalos y coordinación de actividades temáticas.'
+      },
+      {
+        id: 'bingos',
+        name: 'Bingos',
+        icon: '🎱',
+        basePrice: 120000,
+        hours: 4,
+        pdfStyle: 'celebracion',
+        description: 'Locución clara, ágil y entretenida, manejo profesional del ritmo del público, sorteos intermedios y animación constante.'
+      },
+      {
+        id: 'desfiles',
+        name: 'Desfile de Modas / Graduaciones',
+        icon: '🎓',
+        basePrice: 150000,
+        hours: 4,
+        pdfStyle: 'gala',
+        description: 'Conducción formal y manejo de protocolo escénico, presentación de participantes o egresados, coordinación de tiempos y cierre memorable.'
+      },
+      {
+        id: 'otro',
+        name: 'Otro Evento',
+        icon: '✨',
+        basePrice: 120000,
+        hours: 3,
+        pdfStyle: 'corporativo',
+        description: 'Servicio de animación y conducción a medida adaptado al estilo y necesidades de tu celebración.'
+      }
+    ];
+
+    const DEFAULT_QUICK_EXTRAS = [
+      { id: 'ext_traslado', name: 'Traslado fuera de radio urbano', price: 20000 },
+      { id: 'ext_hora', name: 'Hora extra de animación', price: 30000 },
+      { id: 'ext_pinta', name: 'Pintacaritas', price: 35000 },
+      { id: 'ext_pascuero', name: 'Personaje Viejito Pascuero', price: 45000 },
+      { id: 'ext_premios', name: 'Premios y dinámicas especiales', price: 25000 },
+      { id: 'ext_audio', name: 'Apoyo micrófono/amplificación básica', price: 30000 }
+    ];
+
+    const DEFAULT_CONFIG = {
+      brandName: 'Animaciones Divertidas',
+      brandSlogan: 'Tu evento es nuestro evento',
+      host: 'Víctor Galdames — Animador y Maestro de Ceremonias',
+      city: 'La Serena y Coquimbo, Chile',
+      instagram: '@animaciones.divertidas',
+      whatsapp: '+56 9 7799 1098',
+      logoDataUrl: '',
+      defaultDeposit: 20000,
+      defaultValidityDays: 15,
+      defaultTerms: '• La fecha se reserva oficialmente mediante el abono indicado en esta cotización.\n• El saldo pendiente se cancela el día del evento (antes de iniciar o al finalizar, según acuerdo).\n• En caso de cambio de fecha, se puede reprogramar sujeto a disponibilidad avisando con anticipación.\n• Garantizamos puntualidad, vestimenta acorde al evento y conducción profesional de principio a fin.',
+      showBankDetails: false,
+      bank: {
+        name: '',
+        type: '',
+        number: '',
+        holder: 'Víctor Galdames',
+        rut: '',
+        email: ''
+      },
+      gasUrl: '',
+      calendarName: 'Animaciones Divertidas',
+      nextCorrelative: 1
+    };
+
+    /* -------------------------------------------------------------------
+       2. ESTADO GLOBAL
+    ------------------------------------------------------------------- */
+    let appState = {
+      config: cloneObj(DEFAULT_CONFIG),
+      categories: cloneObj(DEFAULT_CATEGORIES),
+      quickExtras: cloneObj(DEFAULT_QUICK_EXTRAS),
+      quotes: [],
+      activeTab: 'cotizar',
+      historyFilter: 'all',
+      draft: null
+    };
+
+    /* -------------------------------------------------------------------
+       3. UTILIDADES GENERALES (CLP, FECHAS SIN BUG UTC, CLIPBOARD, HTML)
+    ------------------------------------------------------------------- */
+    function cloneObj(o) {
+      return JSON.parse(JSON.stringify(o));
+    }
+
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toInt(val) {
+      const n = Number(val);
+      return Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0;
+    }
+
+    function formatCLP(val) {
+      const n = Math.round(Number(val) || 0);
+      const sign = n < 0 ? '-' : '';
+      const formatted = Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return `${sign}$${formatted}`;
+    }
+
+    function parseLocalDate(ymd) {
+      if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;
+      const [y, m, d] = ymd.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatSpanishDateLong(ymd) {
+      const dt = parseLocalDate(ymd);
+      if (!dt) return 'Por definir';
+      const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+      return `${dias[dt.getDay()]} ${dt.getDate()} de ${meses[dt.getMonth()]} de ${dt.getFullYear()}`;
+    }
+
+    function formatTodayYMD() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function addHoursToTime(startTime, hoursToAdd) {
+      if (!startTime || !startTime.includes(':')) return '20:00';
+      const [h, m] = startTime.split(':').map(Number);
+      const totalMins = ((h * 60 + m) + Math.round(hoursToAdd * 60)) % (24 * 60);
+      return `${String(Math.floor(totalMins / 60)).padStart(2, '0')}:${String(totalMins % 60).padStart(2, '0')}`;
+    }
+
+    function calculateDurationInfo(startTime, endTime) {
+      if (!startTime || !endTime || !startTime.includes(':') || !endTime.includes(':')) {
+        return { hours: 0, label: 'Por definir', crossesMidnight: false };
+      }
+      const [sh, sm] = startTime.split(':').map(Number);
+      const [eh, em] = endTime.split(':').map(Number);
+      let startMins = sh * 60 + sm;
+      let endMins = eh * 60 + em;
+      let crossesMidnight = false;
+      if (endMins <= startMins) {
+        endMins += 24 * 60;
+        crossesMidnight = true;
+      }
+      const diffMins = endMins - startMins;
+      const wholeH = Math.floor(diffMins / 60);
+      const remM = diffMins % 60;
+      let label = remM === 0 ? `${wholeH} ${wholeH === 1 ? 'hora' : 'horas'}` : `${wholeH} h ${remM} min`;
+      if (crossesMidnight) label += ' (cruce madrugada)';
+      return { hours: +(diffMins / 60).toFixed(1), label, crossesMidnight };
+    }
+
+    function generateFolio(correlative) {
+      const year = new Date().getFullYear();
+      return `AD-${year}-${String(correlative || 1).padStart(3, '0')}`;
+    }
+
+    function computeTotals(q) {
+      const base = toInt(q.basePrice);
+      const transport = toInt(q.transport);
+      const extrasSum = (q.extras || []).reduce((acc, item) => acc + toInt(item.price), 0);
+      const subtotal = base + transport + extrasSum;
+      const discount = Math.min(toInt(q.discount), subtotal);
+      const total = Math.max(0, subtotal - discount);
+      const deposit = Math.min(toInt(q.deposit), total);
+      const balance = Math.max(0, total - deposit);
+      return { base, transport, extrasSum, subtotal, discount, total, deposit, balance };
+    }
+
+    // Copiado seguro al portapapeles compatible con iOS Safari e iFrames
+    function copyTextToClipboard(text, successMsg = 'Copiado al portapapeles') {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '-9999px';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok) {
+          showToast(successMsg, 'success');
+          return true;
+        }
+      } catch (err) {
+        console.error('Error al copiar:', err);
+      }
+      showToast('No se pudo copiar automáticamente.', 'error');
+      return false;
+    }
+
+    /* -------------------------------------------------------------------
+       4. MANEJO INTELIGENTE DEL LOGO
+       Prioridad 1: Logo subido en Ajustes (localStorage)
+       Prioridad 2: logo.png en la misma carpeta (ideal GitHub Pages)
+       Prioridad 3: Emblema circular "AD" elegante (sin icono roto)
+    ------------------------------------------------------------------- */
+    function getSmartLogoHTML(sizeClass = 'w-10 h-10', fontClass = 'text-sm') {
+      const altText = escapeHTML(appState.config.brandName || 'Animaciones Divertidas');
+      const customLogo = appState.config.logoDataUrl;
+
+      const fallbackEmblem = `
+        <div class="ad-emblem-fallback ${sizeClass} rounded-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 border-2 border-amber-400/80 shadow-inner relative overflow-hidden" style="display:flex;">
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.32),transparent_65%)]"></div>
+          <span class="font-serif font-extrabold tracking-tight bg-gradient-to-b from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent ${fontClass} relative z-10">AD</span>
+        </div>
+      `;
+
+      if (customLogo) {
+        return `
+          <div class="${sizeClass} rounded-full overflow-hidden flex items-center justify-center bg-white/10">
+            <img src="${customLogo}" alt="${altText}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="w-full h-full rounded-full items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950 border border-amber-400/70" style="display:none;">
+              <span class="font-serif font-extrabold text-amber-400 ${fontClass}">AD</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Intenta cargar logo.png desde la misma carpeta; si no existe, oculta img y muestra el emblema circular "AD"
+      return `
+        <div class="${sizeClass} rounded-full overflow-hidden flex items-center justify-center relative">
+          <img src="logo.png" alt="${altText}" class="w-full h-full object-cover bg-white/10" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="w-full h-full rounded-full items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 border-2 border-amber-400/80 relative overflow-hidden" style="display:none;">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.32),transparent_65%)]"></div>
+            <span class="font-serif font-extrabold tracking-tight bg-gradient-to-b from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent ${fontClass} relative z-10">AD</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function refreshBrandUI() {
+      document.getElementById('header-logo-container').innerHTML = getSmartLogoHTML('w-10 h-10', 'text-sm');
+      document.getElementById('header-brand-name').textContent = appState.config.brandName || 'Animaciones Divertidas';
+      document.getElementById('header-brand-slogan').textContent = appState.config.brandSlogan || 'Tu evento es nuestro evento';
+
+      const cfgPreview = document.getElementById('cfg-logo-preview');
+      if (cfgPreview) {
+        cfgPreview.innerHTML = getSmartLogoHTML('w-24 h-24', 'text-3xl');
+      }
+    }
+
+    /* -------------------------------------------------------------------
+       5. PERSISTENCIA EN LOCALSTORAGE
+    ------------------------------------------------------------------- */
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState.config = {
+            ...cloneObj(DEFAULT_CONFIG),
+            ...(parsed.config || {}),
+            bank: {
+              ...cloneObj(DEFAULT_CONFIG.bank),
+              ...((parsed.config && parsed.config.bank) || {})
+            }
+          };
+          if (Array.isArray(parsed.categories) && parsed.categories.length > 0) {
+            appState.categories = parsed.categories;
+          }
+          if (Array.isArray(parsed.quickExtras)) {
+            appState.quickExtras = parsed.quickExtras;
+          }
+          if (Array.isArray(parsed.quotes)) {
+            appState.quotes = parsed.quotes;
+          }
+        }
+      } catch (err) {
+        console.error('Error leyendo localStorage:', err);
+      }
+    }
+
+    function saveState() {
+      try {
+        const payload = {
+          config: appState.config,
+          categories: appState.categories,
+          quickExtras: appState.quickExtras,
+          quotes: appState.quotes
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        updateHistoryBadges();
+      } catch (err) {
+        console.error('Error guardando estado:', err);
+        showToast('Almacenamiento casi lleno. Intenta usar un logo más liviano.', 'error');
+      }
+    }
+
+    /* -------------------------------------------------------------------
+       6. GESTIÓN DEL BORRADOR DE COTIZACIÓN (MÓDULO 1)
+    ------------------------------------------------------------------- */
+    function createEmptyDraft(categoryId = 'matrimonio') {
+      const cat = appState.categories.find(c => c.id === categoryId) || appState.categories[0];
+      const defaultStart = cat.hours >= 5 ? '19:00' : '16:00';
+      const defaultEnd = addHoursToTime(defaultStart, cat.hours || 3);
+
+      return {
+        id: null,
+        folio: generateFolio(appState.config.nextCorrelative),
+        issueDate: formatTodayYMD(),
+        updatedAt: new Date().toISOString(),
+        status: 'pendiente',
+        calendarSynced: false,
+        categoryId: cat.id,
+        categoryName: cat.name,
+        categoryIcon: cat.icon || '✨',
+        clientName: '',
+        clientPhone: '',
+        clientEmail: '',
+        eventDate: '',
+        startTime: defaultStart,
+        endTime: defaultEnd,
+        location: '',
+        guests: '',
+        serviceTitle: `Animación y Conducción Profesional · ${cat.name}`,
+        serviceDesc: cat.description,
+        familyFriendly: true,
+        includeVideocall: true,
+        basePrice: toInt(cat.basePrice),
+        transport: 0,
+        extras: [],
+        discount: 0,
+        deposit: toInt(appState.config.defaultDeposit ?? 20000),
+        validityDays: toInt(appState.config.defaultValidityDays || 15),
+        notes: appState.config.defaultTerms || DEFAULT_CONFIG.defaultTerms,
+        pdfStyle: cat.pdfStyle || 'gala'
+      };
+    }
+
+    function startNewQuote(notify = false) {
+      appState.draft = createEmptyDraft('matrimonio');
+      populateFormFromDraft();
+      renderCategoryGrid();
+      renderQuickExtrasChips();
+      renderActiveExtras();
+      updateLiveSummary();
+      switchTab('cotizar');
+      if (notify) showToast('Nueva cotización lista para completar', 'info');
+    }
+
+    function selectCategory(catId) {
+      const cat = appState.categories.find(c => c.id === catId);
+      if (!cat) return;
+      const d = appState.draft;
+      d.categoryId = cat.id;
+      d.categoryName = cat.name;
+      d.categoryIcon = cat.icon || '✨';
+      d.serviceTitle = `Animación y Conducción Profesional · ${cat.name}`;
+      d.serviceDesc = cat.description;
+      d.basePrice = toInt(cat.basePrice);
+      d.pdfStyle = cat.pdfStyle || 'gala';
+
+      const suggestedStart = cat.hours >= 5 ? '19:00' : '16:00';
+      if (!d.id) d.startTime = suggestedStart;
+      d.endTime = addHoursToTime(d.startTime || suggestedStart, cat.hours || 3);
+
+      populateFormFromDraft();
+      renderCategoryGrid();
+      updateLiveSummary();
+      showToast(`${cat.icon} ${cat.name} cargado (${formatCLP(cat.basePrice)} · ${cat.hours} hrs)`, 'info');
+    }
+
+    function restoreCategoryDefaults() {
+      const cat = appState.categories.find(c => c.id === appState.draft.categoryId);
+      if (!cat) return;
+      appState.draft.serviceTitle = `Animación y Conducción Profesional · ${cat.name}`;
+      appState.draft.serviceDesc = cat.description;
+      appState.draft.basePrice = toInt(cat.basePrice);
+      appState.draft.notes = appState.config.defaultTerms || DEFAULT_CONFIG.defaultTerms;
+      populateFormFromDraft();
+      updateLiveSummary();
+      showToast('Descripción y tarifa base restauradas', 'success');
+    }
+
+    function populateFormFromDraft() {
+      const d = appState.draft;
+      document.getElementById('q-client-name').value = d.clientName || '';
+      document.getElementById('q-client-phone').value = d.clientPhone || '';
+      document.getElementById('q-client-email').value = d.clientEmail || '';
+      document.getElementById('q-event-date').value = d.eventDate || '';
+      document.getElementById('q-start-time').value = d.startTime || '16:00';
+      document.getElementById('q-end-time').value = d.endTime || '19:00';
+      document.getElementById('q-location').value = d.location || '';
+      document.getElementById('q-guests').value = d.guests || '';
+      document.getElementById('q-service-title').value = d.serviceTitle || '';
+      document.getElementById('q-service-desc').value = d.serviceDesc || '';
+      document.getElementById('q-base-price').value = d.basePrice ?? 0;
+      document.getElementById('q-transport').value = d.transport ?? 0;
+      document.getElementById('q-discount').value = d.discount ?? 0;
+      document.getElementById('q-deposit').value = d.deposit ?? 20000;
+      document.getElementById('q-validity').value = d.validityDays || 15;
+      document.getElementById('q-notes').value = d.notes || '';
+
+      const fBtn = document.getElementById('toggle-family');
+      fBtn.classList.toggle('active', !!d.familyFriendly);
+      fBtn.setAttribute('aria-checked', d.familyFriendly ? 'true' : 'false');
+
+      const vBtn = document.getElementById('toggle-videocall');
+      vBtn.classList.toggle('active', !!d.includeVideocall);
+      vBtn.setAttribute('aria-checked', d.includeVideocall ? 'true' : 'false');
+
+      const banner = document.getElementById('editing-banner');
+      if (d.id) {
+        banner.classList.remove('hidden');
+        document.getElementById('editing-folio').textContent = d.folio;
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      updateDateAndDurationHelpers();
+    }
+
+    function syncFormToDraft() {
+      const d = appState.draft;
+      d.clientName = document.getElementById('q-client-name').value.trim();
+      d.clientPhone = document.getElementById('q-client-phone').value.trim();
+      d.clientEmail = document.getElementById('q-client-email').value.trim();
+      d.eventDate = document.getElementById('q-event-date').value;
+      d.startTime = document.getElementById('q-start-time').value;
+      d.endTime = document.getElementById('q-end-time').value;
+      d.location = document.getElementById('q-location').value.trim();
+      d.guests = document.getElementById('q-guests').value.trim();
+      d.serviceTitle = document.getElementById('q-service-title').value.trim();
+      d.serviceDesc = document.getElementById('q-service-desc').value.trim();
+      d.basePrice = toInt(document.getElementById('q-base-price').value);
+      d.transport = toInt(document.getElementById('q-transport').value);
+      d.discount = toInt(document.getElementById('q-discount').value);
+      d.deposit = toInt(document.getElementById('q-deposit').value);
+      d.validityDays = Math.max(1, toInt(document.getElementById('q-validity').value) || 15);
+      d.notes = document.getElementById('q-notes').value.trim();
+
+      updateDateAndDurationHelpers();
+      updateLiveSummary();
+    }
+
+    function updateDateAndDurationHelpers() {
+      const d = appState.draft;
+      document.getElementById('q-date-preview').textContent = d.eventDate ? `📅 ${formatSpanishDateLong(d.eventDate)}` : '';
+      const dur = calculateDurationInfo(d.startTime, d.endTime);
+      document.getElementById('q-duration-badge').innerHTML = `⏱️ Duración calculada: <strong class="text-slate-900">${escapeHTML(dur.label)}</strong>`;
+    }
+
+    function toggleDraftFlag(flagKey) {
+      appState.draft[flagKey] = !appState.draft[flagKey];
+      const elId = flagKey === 'familyFriendly' ? 'toggle-family' : 'toggle-videocall';
+      const el = document.getElementById(elId);
+      el.classList.toggle('active', !!appState.draft[flagKey]);
+      el.setAttribute('aria-checked', appState.draft[flagKey] ? 'true' : 'false');
+    }
+
+    function setTransportZero() {
+      appState.draft.transport = 0;
+      document.getElementById('q-transport').value = 0;
+      updateLiveSummary();
+      showToast('Traslado configurado en $0 / Incluido', 'info');
+    }
+
+    /* -------------------------------------------------------------------
+       7. RENDER DE CATEGORÍAS Y EXTRAS EN FORMULARIO
+    ------------------------------------------------------------------- */
+    function renderCategoryGrid() {
+      const grid = document.getElementById('category-grid');
+      grid.innerHTML = appState.categories.map(cat => {
+        const active = appState.draft.categoryId === cat.id;
+        return `
+          <button type="button" onclick="selectCategory('${cat.id}')"
+            class="touch-btn text-left p-2.5 rounded-xl border transition active:scale-95 flex flex-col justify-between min-h-[82px] ${
+              active
+                ? 'bg-slate-900 text-white border-amber-400 ring-2 ring-amber-400/50 shadow-md'
+                : 'bg-slate-50 hover:bg-amber-50/70 text-slate-800 border-slate-200 hover:border-amber-300'
+            }">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-lg leading-none">${cat.icon || '✨'}</span>
+              <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${active ? 'bg-amber-400 text-slate-950' : 'bg-slate-200/80 text-slate-600'}">${cat.hours}h</span>
+            </div>
+            <div class="mt-1.5">
+              <p class="text-xs font-bold leading-tight line-clamp-2">${escapeHTML(cat.name)}</p>
+              <p class="text-[11px] font-extrabold mt-0.5 ${active ? 'text-amber-300' : 'text-slate-500'}">${formatCLP(cat.basePrice)}</p>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderQuickExtrasChips() {
+      const container = document.getElementById('quick-extras-chips');
+      const activeIds = new Set((appState.draft.extras || []).map(e => e.catalogId));
+      container.innerHTML = appState.quickExtras.map(ex => {
+        const added = activeIds.has(ex.id);
+        return `
+          <button type="button" onclick="toggleQuickExtra('${ex.id}')"
+            class="touch-btn px-3 py-2 rounded-xl text-xs font-bold border transition active:scale-95 flex items-center gap-1.5 ${
+              added
+                ? 'bg-amber-400 text-slate-950 border-amber-500 shadow-sm'
+                : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300'
+            }">
+            <span>${added ? '✓' : '+'}</span>
+            <span>${escapeHTML(ex.name)}</span>
+            <span class="opacity-80 font-extrabold">${formatCLP(ex.price)}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleQuickExtra(catalogId) {
+      const idx = appState.draft.extras.findIndex(e => e.catalogId === catalogId);
+      if (idx >= 0) {
+        appState.draft.extras.splice(idx, 1);
+      } else {
+        const found = appState.quickExtras.find(e => e.id === catalogId);
+        if (!found) return;
+        appState.draft.extras.push({
+          uid: 'ex_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          catalogId: found.id,
+          name: found.name,
+          price: toInt(found.price)
+        });
+      }
+      renderQuickExtrasChips();
+      renderActiveExtras();
+      updateLiveSummary();
+    }
+
+    function addCustomExtra() {
+      const nameEl = document.getElementById('custom-extra-name');
+      const priceEl = document.getElementById('custom-extra-price');
+      const name = nameEl.value.trim();
+      const price = toInt(priceEl.value);
+      if (!name) {
+        showToast('Escribe el nombre del ítem adicional', 'error');
+        nameEl.focus();
+        return;
+      }
+      appState.draft.extras.push({
+        uid: 'ex_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        catalogId: null,
+        name,
+        price
+      });
+      nameEl.value = '';
+      priceEl.value = '';
+      renderActiveExtras();
+      updateLiveSummary();
+      showToast(`Extra "${name}" agregado`, 'success');
+    }
+
+    function updateExtraPrice(uid, newVal) {
+      const item = appState.draft.extras.find(e => e.uid === uid);
+      if (item) {
+        item.price = toInt(newVal);
+        updateLiveSummary();
+      }
+    }
+
+    function removeExtra(uid) {
+      appState.draft.extras = appState.draft.extras.filter(e => e.uid !== uid);
+      renderQuickExtrasChips();
+      renderActiveExtras();
+      updateLiveSummary();
+    }
+
+    function renderActiveExtras() {
+      const list = document.getElementById('active-extras-list');
+      if (!appState.draft.extras.length) {
+        list.innerHTML = '';
+        return;
+      }
+      list.innerHTML = appState.draft.extras.map(ex => `
+        <div class="flex items-center justify-between gap-2 bg-amber-50/80 border border-amber-200 rounded-xl px-3 py-2">
+          <span class="text-xs sm:text-sm font-bold text-slate-800 truncate flex-1">${escapeHTML(ex.name)}</span>
+          <div class="flex items-center gap-2">
+            <div class="relative w-28">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">$</span>
+              <input type="number" inputmode="numeric" step="1000" value="${ex.price}" oninput="updateExtraPrice('${ex.uid}', this.value)"
+                class="touch-btn w-full rounded-lg border border-amber-300 bg-white pl-6 pr-2 py-1 text-right font-extrabold text-slate-900 outline-none focus:border-amber-500">
+            </div>
+            <button type="button" onclick="removeExtra('${ex.uid}')" aria-label="Eliminar extra" class="w-10 h-10 rounded-xl bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center font-bold transition">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateLiveSummary() {
+      const d = appState.draft;
+      const t = computeTotals(d);
+
+      document.getElementById('live-folio').textContent = d.folio;
+      document.getElementById('sum-base').textContent = formatCLP(t.base);
+      const transEl = document.getElementById('sum-transport');
+      transEl.textContent = t.transport === 0 ? 'Incluido ($0)' : formatCLP(t.transport);
+      transEl.className = t.transport === 0 ? 'font-bold text-emerald-400' : 'font-bold text-white';
+
+      const exRow = document.getElementById('sum-extras-row');
+      if (d.extras.length > 0) {
+        exRow.classList.remove('hidden');
+        document.getElementById('sum-extras-count').textContent = d.extras.length;
+        document.getElementById('sum-extras').textContent = formatCLP(t.extrasSum);
+      } else {
+        exRow.classList.add('hidden');
+      }
+
+      const discRow = document.getElementById('sum-discount-row');
+      if (t.discount > 0) {
+        discRow.classList.remove('hidden');
+        document.getElementById('sum-discount').textContent = `-${formatCLP(t.discount)}`;
+      } else {
+        discRow.classList.add('hidden');
+      }
+
+      document.getElementById('sum-total').textContent = formatCLP(t.total);
+      document.getElementById('sum-deposit').textContent = formatCLP(t.deposit);
+      document.getElementById('sum-balance').textContent = formatCLP(t.balance);
+    }
+
+    /* -------------------------------------------------------------------
+       8. GUARDAR COTIZACIÓN + SINCRONIZAR NUBE EN SEGUNDO PLANO
+    ------------------------------------------------------------------- */
+    function persistCurrentDraft(silent = false) {
+      syncFormToDraft();
+      const d = appState.draft;
+      d.updatedAt = new Date().toISOString();
+
+      if (!d.id) {
+        d.id = 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        d.folio = generateFolio(appState.config.nextCorrelative);
+        d.issueDate = formatTodayYMD();
+        appState.config.nextCorrelative = (appState.config.nextCorrelative || 1) + 1;
+        appState.quotes.unshift(cloneObj(d));
+      } else {
+        const idx = appState.quotes.findIndex(q => q.id === d.id);
+        if (idx >= 0) {
+          appState.quotes[idx] = cloneObj(d);
+        } else {
+          appState.quotes.unshift(cloneObj(d));
+        }
+      }
+
+      saveState();
+      populateFormFromDraft();
+
+      // Si hay nube configurada, sube esta cotización en segundo plano para el otro iPhone
+      if ((appState.config.gasUrl || '').startsWith('https://script.google.com/')) {
+        pushQuoteToCloudSilent(d);
+      }
+
+      if (!silent) showToast(`Cotización ${d.folio} guardada ✓`, 'success');
+      return d;
+    }
+
+    function saveQuoteOnly() {
+      syncFormToDraft();
+      if (!appState.draft.clientName) {
+        showToast('Ingresa el nombre del cliente antes de guardar', 'error');
+        document.getElementById('q-client-name').focus();
+        return;
+      }
+      persistCurrentDraft(false);
+    }
+
+    function saveAndPreviewPDF() {
+      syncFormToDraft();
+      if (!appState.draft.clientName) {
+        showToast('Ingresa el nombre del cliente para generar el PDF', 'error');
+        document.getElementById('q-client-name').focus();
+        return;
+      }
+      persistCurrentDraft(false);
+      renderPDFDocument();
+      switchTab('pdf');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* -------------------------------------------------------------------
+       9. MÓDULO 2: VISTA PDF PROFESIONAL (4 ESTILOS VISUALES)
+    ------------------------------------------------------------------- */
+    function setPdfStyle(styleName) {
+      appState.draft.pdfStyle = styleName;
+      if (appState.draft.id) {
+        const q = appState.quotes.find(item => item.id === appState.draft.id);
+        if (q) {
+          q.pdfStyle = styleName;
+          q.updatedAt = new Date().toISOString();
+          saveState();
+        }
+      }
+      renderPDFDocument();
+    }
+
+    function renderPDFDocument() {
+      const q = appState.draft;
+      const cfg = appState.config;
+      const totals = computeTotals(q);
+      const dur = calculateDurationInfo(q.startTime, q.endTime);
+      const style = q.pdfStyle || 'gala';
+
+      // Resaltar estilo activo
+      document.querySelectorAll('.pdf-style-btn').forEach(btn => {
+        const isCurrent = btn.dataset.styleBtn === style;
+        btn.className = `pdf-style-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${
+          isCurrent
+            ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+        }`;
+      });
+
+      // Botón aceptar/agendar en barra PDF
+      const acceptBtn = document.getElementById('pdf-accept-btn');
+      if (q.status === 'aceptada' && q.calendarSynced) {
+        acceptBtn.innerHTML = '<span>✅</span> Agendada · Re-agendar';
+      } else if (q.status === 'aceptada') {
+        acceptBtn.innerHTML = '<span>📅</span> Aceptada · Agendar';
+      } else {
+        acceptBtn.innerHTML = '<span>📅</span> Aceptar y Agendar';
+      }
+
+      // Paletas exactas de los 4 estilos
+      const themes = {
+        gala: {
+          pageBg: 'bg-[#FFFEFA]',
+          headerBg: 'bg-gradient-to-br from-[#0B1426] via-[#13223D] to-[#08101E] text-white border-b-4 border-[#D4AF37]',
+          titleFont: 'font-serif',
+          accentText: 'text-[#B2871E]',
+          accentSoft: 'text-[#F5E6B3]',
+          badgeBg: 'bg-[#D4AF37]/15 text-[#F5E6B3] border border-[#D4AF37]/45',
+          cardBg: 'bg-[#FAF7EF] border border-[#E5D7B7]',
+          sectionTitle: 'font-serif text-[#0F172A] border-b-2 border-[#D4AF37]/60',
+          guaranteeBg: 'bg-[#0F172A] text-white border border-[#D4AF37]/55',
+          guaranteeAccent: 'text-[#F5E6B3]',
+          tableHead: 'bg-[#0F172A] text-[#F5E6B3]',
+          totalBox: 'bg-gradient-to-r from-[#0B1426] to-[#1A2942] text-white border border-[#D4AF37]',
+          totalPrice: 'text-[#F2CE68]',
+          footerBg: 'bg-[#0B1426] text-slate-300 border-t-2 border-[#D4AF37]'
+        },
+        corporativo: {
+          pageBg: 'bg-white',
+          headerBg: 'bg-gradient-to-r from-slate-800 via-slate-900 to-indigo-950 text-white border-b-4 border-indigo-500',
+          titleFont: 'font-sans',
+          accentText: 'text-indigo-700',
+          accentSoft: 'text-indigo-200',
+          badgeBg: 'bg-indigo-500/20 text-indigo-100 border border-indigo-400/40',
+          cardBg: 'bg-slate-50 border border-slate-200',
+          sectionTitle: 'font-sans text-slate-900 border-b-2 border-indigo-500/45',
+          guaranteeBg: 'bg-indigo-50 text-indigo-950 border border-indigo-200',
+          guaranteeAccent: 'text-indigo-700',
+          tableHead: 'bg-slate-800 text-white',
+          totalBox: 'bg-gradient-to-r from-slate-900 to-indigo-900 text-white border border-indigo-400/40',
+          totalPrice: 'text-indigo-200',
+          footerBg: 'bg-slate-900 text-slate-300 border-t-4 border-indigo-500'
+        },
+        celebracion: {
+          pageBg: 'bg-white',
+          headerBg: 'bg-gradient-to-r from-purple-700 via-fuchsia-600 to-amber-500 text-white border-b-4 border-amber-300',
+          titleFont: 'font-sans',
+          accentText: 'text-purple-700',
+          accentSoft: 'text-amber-100',
+          badgeBg: 'bg-white/20 text-white border border-white/35',
+          cardBg: 'bg-fuchsia-50/55 border border-fuchsia-200/80',
+          sectionTitle: 'font-sans text-purple-900 border-b-2 border-fuchsia-400/55',
+          guaranteeBg: 'bg-gradient-to-r from-purple-50 to-amber-50 text-purple-950 border border-purple-200',
+          guaranteeAccent: 'text-fuchsia-700',
+          tableHead: 'bg-purple-800 text-white',
+          totalBox: 'bg-gradient-to-r from-purple-800 via-fuchsia-700 to-amber-600 text-white',
+          totalPrice: 'text-amber-200',
+          footerBg: 'bg-purple-950 text-purple-100 border-t-4 border-amber-400'
+        },
+        tierno: {
+          pageBg: 'bg-[#FFFDFB]',
+          headerBg: 'bg-gradient-to-r from-[#C88EA7] via-[#B49A8E] to-[#7B9982] text-white border-b-4 border-[#F2DFD3]',
+          titleFont: 'font-serif',
+          accentText: 'text-[#8C5B6E]',
+          accentSoft: 'text-[#FDF2EE]',
+          badgeBg: 'bg-white/20 text-white border border-white/35',
+          cardBg: 'bg-[#FBF5F2] border border-[#EBDAD3]',
+          sectionTitle: 'font-serif text-[#576E5C] border-b-2 border-[#D9A7B8]/60',
+          guaranteeBg: 'bg-[#F2F6F3] text-[#3F5745] border border-[#CFE0D3]',
+          guaranteeAccent: 'text-[#8C5B6E]',
+          tableHead: 'bg-[#6F8E76] text-white',
+          totalBox: 'bg-gradient-to-r from-[#6F8E76] to-[#9E7686] text-white border border-[#F2DFD3]',
+          totalPrice: 'text-[#FFF4E4]',
+          footerBg: 'bg-[#4E6453] text-[#EEF3EF] border-t-4 border-[#E8C5D0]'
+        }
+      };
+
+      const th = themes[style] || themes.gala;
+
+      // Garantías activadas
+      const guarantees = [];
+      if (q.familyFriendly) {
+        guarantees.push({
+          icon: '🛡️',
+          title: 'Garantía Ambiente 100% Familiar',
+          text: 'Animación cercana, alegre y totalmente respetuosa, libre de humor de doble sentido, pensada para que todas las generaciones disfruten cómodamente.'
+        });
+      }
+      if (q.includeVideocall) {
+        guarantees.push({
+          icon: '🎥',
+          title: 'Videollamada Previa + Asesoría WhatsApp',
+          text: 'Incluye reunión previa por videollamada para afinar pauta, tiempos y música, además de acompañamiento continuo por WhatsApp hasta el día del evento.'
+        });
+      }
+
+      const guaranteesHTML = guarantees.length ? `
+        <div class="grid grid-cols-1 ${guarantees.length > 1 ? 'sm:grid-cols-2' : ''} gap-3 mt-4">
+          ${guarantees.map(g => `
+            <div class="rounded-xl ${th.guaranteeBg} p-3.5 flex items-start gap-2.5">
+              <span class="text-lg leading-none flex-shrink-0 mt-0.5">${g.icon}</span>
+              <div>
+                <p class="text-xs font-extrabold ${th.guaranteeAccent}">${escapeHTML(g.title)}</p>
+                <p class="text-[11px] opacity-90 leading-snug mt-0.5">${escapeHTML(g.text)}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : '';
+
+      const extrasRowsHTML = (q.extras || []).map(ex => `
+        <tr class="border-b border-slate-100">
+          <td class="py-2.5 px-3.5 text-slate-700 text-xs sm:text-sm">
+            <span class="font-semibold">${escapeHTML(ex.name)}</span>
+            <span class="block text-[11px] text-slate-400">Servicio adicional</span>
+          </td>
+          <td class="py-2.5 px-3.5 text-right font-bold text-slate-800 text-xs sm:text-sm whitespace-nowrap">${formatCLP(ex.price)}</td>
+        </tr>
+      `).join('');
+
+      const hasBankData = cfg.showBankDetails && (cfg.bank.name || cfg.bank.number || cfg.bank.holder || cfg.bank.rut);
+      const bankHTML = hasBankData ? `
+        <div class="print-avoid-break rounded-xl ${th.cardBg} p-3.5 sm:p-4 mt-4">
+          <p class="text-xs font-extrabold uppercase tracking-wider ${th.accentText} mb-2">🏦 Datos de Transferencia para Reserva</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-slate-700">
+            ${cfg.bank.name ? `<div><span class="text-[10px] uppercase text-slate-400 block">Banco</span><strong>${escapeHTML(cfg.bank.name)}</strong></div>` : ''}
+            ${cfg.bank.type ? `<div><span class="text-[10px] uppercase text-slate-400 block">Tipo Cuenta</span><strong>${escapeHTML(cfg.bank.type)}</strong></div>` : ''}
+            ${cfg.bank.number ? `<div><span class="text-[10px] uppercase text-slate-400 block">N° Cuenta</span><strong>${escapeHTML(cfg.bank.number)}</strong></div>` : ''}
+            ${cfg.bank.holder ? `<div><span class="text-[10px] uppercase text-slate-400 block">Titular</span><strong>${escapeHTML(cfg.bank.holder)}</strong></div>` : ''}
+            ${cfg.bank.rut ? `<div><span class="text-[10px] uppercase text-slate-400 block">RUT</span><strong>${escapeHTML(cfg.bank.rut)}</strong></div>` : ''}
+            ${cfg.bank.email ? `<div><span class="text-[10px] uppercase text-slate-400 block">Correo</span><strong class="break-all">${escapeHTML(cfg.bank.email)}</strong></div>` : ''}
+          </div>
+        </div>
+      ` : '';
+
+      const notesHTML = (q.notes || '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => `<p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">${escapeHTML(line)}</p>`)
+        .join('');
+
+      const pdfDoc = document.getElementById('pdf-document');
+      pdfDoc.className = `w-full max-w-[820px] ${th.pageBg} rounded-2xl shadow-xl overflow-hidden border border-slate-200`;
+
+      pdfDoc.innerHTML = `
+        <!-- ENCABEZADO DEL DOCUMENTO -->
+        <div class="${th.headerBg} px-5 sm:px-8 py-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/30 shadow-lg bg-white/10 flex items-center justify-center">
+                ${getSmartLogoHTML('w-full h-full', 'text-2xl')}
+              </div>
+              <div>
+                <h1 class="${th.titleFont} text-xl sm:text-2xl font-extrabold tracking-tight leading-tight">${escapeHTML(cfg.brandName)}</h1>
+                <p class="text-xs sm:text-[13px] ${th.accentSoft} font-semibold italic mt-0.5">"${escapeHTML(cfg.brandSlogan)}"</p>
+                <p class="text-[11px] opacity-90 mt-1">${escapeHTML(cfg.host)}</p>
+                <p class="text-[11px] opacity-75">📍 ${escapeHTML(cfg.city)}</p>
+              </div>
+            </div>
+
+            <div class="sm:text-right flex sm:flex-col justify-between items-center sm:items-end gap-1 border-t sm:border-t-0 border-white/15 pt-3 sm:pt-0">
+              <span class="inline-block text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full ${th.badgeBg}">
+                Cotización Profesional
+              </span>
+              <p class="font-mono text-base sm:text-lg font-extrabold tracking-wide mt-1">${escapeHTML(q.folio)}</p>
+              <div class="text-[11px] opacity-85 space-y-0.5">
+                <p>Emisión: ${escapeHTML(formatSpanishDateLong(q.issueDate || formatTodayYMD()))}</p>
+                <p>Validez: ${escapeHTML(q.validityDays || 15)} días corridos</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUERPO DEL DOCUMENTO -->
+        <div class="px-5 sm:px-8 py-6 space-y-6">
+
+          <!-- DATOS DEL CLIENTE Y EVENTO -->
+          <div class="print-avoid-break rounded-2xl ${th.cardBg} p-4 sm:p-5">
+            <div class="flex flex-wrap items-start justify-between gap-2 mb-3.5">
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-widest ${th.accentText}">Propuesta preparada especialmente para</p>
+                <h2 class="${th.titleFont} text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">${escapeHTML(q.clientName || 'Cliente')}</h2>
+                <div class="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500 mt-1">
+                  ${q.clientPhone ? `<span>📱 ${escapeHTML(q.clientPhone)}</span>` : ''}
+                  ${q.clientEmail ? `<span>✉️ ${escapeHTML(q.clientEmail)}</span>` : ''}
+                </div>
+              </div>
+              <span class="px-3 py-1.5 rounded-full text-xs font-extrabold bg-white shadow-sm border border-slate-200 text-slate-800">
+                ${escapeHTML(q.categoryIcon || '✨')} ${escapeHTML(q.categoryName || 'Evento')}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs sm:text-[13px] pt-3.5 border-t border-slate-200/75">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">📅 Fecha del Evento</span>
+                <strong class="text-slate-800">${escapeHTML(formatSpanishDateLong(q.eventDate))}</strong>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">⏰ Horario</span>
+                <strong class="text-slate-800">${escapeHTML(q.startTime || '--:--')} a ${escapeHTML(q.endTime || '--:--')} hrs</strong>
+                <span class="block text-[11px] text-slate-500">(${escapeHTML(dur.label)})</span>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">📍 Lugar / Recinto</span>
+                <strong class="text-slate-800">${escapeHTML(q.location || 'Por confirmar')}</strong>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">👥 Invitados Aprox.</span>
+                <strong class="text-slate-800">${escapeHTML(q.guests || 'Por confirmar')}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- DESCRIPCIÓN DEL SERVICIO E INSIGNIAS -->
+          <div class="print-avoid-break">
+            <h3 class="${th.sectionTitle} text-base sm:text-lg font-bold pb-2 mb-3">
+              Detalle de Nuestro Servicio
+            </h3>
+            <p class="text-sm sm:text-base font-extrabold text-slate-900 mb-1.5">${escapeHTML(q.serviceTitle || q.categoryName)}</p>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line">${escapeHTML(q.serviceDesc || '')}</p>
+            ${guaranteesHTML}
+          </div>
+
+          <!-- TABLA DESGLOSADA DE VALORES CLP -->
+          <div class="print-avoid-break">
+            <h3 class="${th.sectionTitle} text-base sm:text-lg font-bold pb-2 mb-3">
+              Resumen de Inversión (CLP)
+            </h3>
+
+            <div class="rounded-xl overflow-hidden border border-slate-200">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr class="${th.tableHead} text-[11px] uppercase tracking-wider">
+                    <th class="py-2.5 px-3.5 text-left font-bold">Descripción</th>
+                    <th class="py-2.5 px-3.5 text-right font-bold">Monto CLP</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white">
+                  <tr class="border-b border-slate-100">
+                    <td class="py-2.5 px-3.5 text-slate-800 text-xs sm:text-sm">
+                      <span class="font-bold">${escapeHTML(q.serviceTitle || q.categoryName)}</span>
+                      <span class="block text-[11px] text-slate-400">Duración contemplada: ${escapeHTML(dur.label)}</span>
+                    </td>
+                    <td class="py-2.5 px-3.5 text-right font-extrabold text-slate-900 text-xs sm:text-sm whitespace-nowrap">${formatCLP(totals.base)}</td>
+                  </tr>
+                  <tr class="border-b border-slate-100">
+                    <td class="py-2.5 px-3.5 text-slate-700 text-xs sm:text-sm">Traslado y coordinación logística</td>
+                    <td class="py-2.5 px-3.5 text-right font-bold text-xs sm:text-sm whitespace-nowrap ${totals.transport === 0 ? 'text-emerald-700' : 'text-slate-800'}">
+                      ${totals.transport === 0 ? 'Incluido ($0)' : formatCLP(totals.transport)}
+                    </td>
+                  </tr>
+                  ${extrasRowsHTML}
+                  ${totals.discount > 0 ? `
+                    <tr class="border-b border-slate-100 bg-rose-50/60">
+                      <td class="py-2.5 px-3.5 text-rose-700 font-bold text-xs sm:text-sm">Descuento especial aplicado</td>
+                      <td class="py-2.5 px-3.5 text-right font-extrabold text-rose-700 text-xs sm:text-sm whitespace-nowrap">-${formatCLP(totals.discount)}</td>
+                    </tr>
+                  ` : ''}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- BLOQUE DESTACADO TOTAL + ABONO + SALDO -->
+            <div class="mt-3.5 rounded-2xl ${th.totalBox} p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-bold uppercase tracking-widest opacity-85">Total Final del Servicio</p>
+                <p class="text-3xl sm:text-4xl font-extrabold tracking-tight ${th.totalPrice} mt-0.5">${formatCLP(totals.total)}</p>
+              </div>
+              <div class="bg-white/10 rounded-xl px-4 py-3 text-xs space-y-1.5 min-w-[235px] border border-white/15">
+                <div class="flex justify-between gap-4">
+                  <span class="opacity-85">Abono para reservar fecha:</span>
+                  <strong class="text-sm">${formatCLP(totals.deposit)}</strong>
+                </div>
+                <div class="flex justify-between gap-4 pt-1.5 border-t border-white/15">
+                  <span class="opacity-85">Saldo el día del evento:</span>
+                  <strong class="text-sm">${formatCLP(totals.balance)}</strong>
+                </div>
+              </div>
+            </div>
+
+            ${bankHTML}
+          </div>
+
+          <!-- CONDICIONES COMERCIALES -->
+          ${notesHTML ? `
+            <div class="print-avoid-break pt-2 border-t border-slate-200/80">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Condiciones Comerciales y Reserva</p>
+              <div class="space-y-1">${notesHTML}</div>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- PIE DE PÁGINA CON INSTAGRAM Y WHATSAPP -->
+        <footer class="${th.footerBg} px-5 sm:px-8 py-4 sm:py-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div>
+              <p class="font-extrabold text-white text-sm">${escapeHTML(cfg.brandName)} <span class="font-normal opacity-80">· ${escapeHTML(cfg.brandSlogan)}</span></p>
+              <p class="opacity-80 mt-0.5">${escapeHTML(cfg.city)}</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+              <span>📱 WhatsApp: <strong class="text-white">${escapeHTML(cfg.whatsapp)}</strong></span>
+              <span>📸 Instagram: <strong class="text-white">${escapeHTML(cfg.instagram)}</strong></span>
+            </div>
+          </div>
+        </footer>
+      `;
+    }
+
+    function printQuotePDF() {
+      renderPDFDocument();
+      setTimeout(() => window.print(), 90);
+    }
+
+    /* -------------------------------------------------------------------
+       10. MENSAJE PROFESIONAL PARA WHATSAPP
+    ------------------------------------------------------------------- */
+    function buildWhatsAppMessage(q) {
+      const cfg = appState.config;
+      const t = computeTotals(q);
+      const dur = calculateDurationInfo(q.startTime, q.endTime);
+
+      const lines = [
+        `✨ *COTIZACIÓN ${q.folio} · ${cfg.brandName.toUpperCase()}* ✨`,
+        `_${cfg.brandSlogan}_`,
+        ``,
+        `¡Hola${q.clientName ? ' ' + q.clientName : ''}! Te compartimos el detalle de tu propuesta para tu celebración:`,
+        ``,
+        `${q.categoryIcon || '🎉'} *Evento:* ${q.categoryName}`,
+        `📅 *Fecha:* ${formatSpanishDateLong(q.eventDate)}`,
+        `⏰ *Horario:* ${q.startTime || '--:--'} a ${q.endTime || '--:--'} hrs (${dur.label})`,
+        q.location ? `📍 *Lugar:* ${q.location}` : null,
+        q.guests ? `👥 *Invitados aprox.:* ${q.guests}` : null,
+        ``,
+        `🎤 *Servicio incluido:*`,
+        `${q.serviceDesc}`,
+        q.familyFriendly ? `🛡️ _Garantía: Ambiente 100% familiar (sin humor doble sentido)._` : null,
+        q.includeVideocall ? `🎥 _Incluye videollamada previa de planificación y asesoría por WhatsApp._` : null,
+        (q.extras && q.extras.length) ? `➕ *Extras:* ${q.extras.map(e => `${e.name} (${formatCLP(e.price)})`).join(', ')}` : null,
+        ``,
+        `💰 *Total Final:* *${formatCLP(t.total)}*`,
+        `📌 *Abono para reservar fecha:* ${formatCLP(t.deposit)}`,
+        `🧾 *Saldo el día del evento:* ${formatCLP(t.balance)}`,
+        `⏳ _Cotización válida por ${q.validityDays || 15} días._`,
+        ``,
+        `Quedamos a tu disposición para reservar tu fecha y comenzar a planificar juntos 🙌`,
+        `*${cfg.brandName}* · ${cfg.instagram}`
+      ].filter(x => x !== null);
+
+      return lines.join('\n');
+    }
+
+    function copyWhatsAppSummary() {
+      const text = buildWhatsAppMessage(appState.draft);
+      copyTextToClipboard(text, 'Texto para WhatsApp copiado 📋');
+    }
+
+    function sendQuoteWhatsApp() {
+      const q = appState.draft;
+      const encoded = encodeURIComponent(buildWhatsAppMessage(q));
+      let phone = (q.clientPhone || '').replace(/[^\d]/g, '');
+      if (phone.length === 9 && phone.startsWith('9')) phone = '56' + phone;
+      const url = phone.length >= 10
+        ? `https://wa.me/${phone}?text=${encoded}`
+        : `https://wa.me/?text=${encoded}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    /* -------------------------------------------------------------------
+       11. MÓDULO 3: HISTORIAL Y ACCIONES RÁPIDAS
+    ------------------------------------------------------------------- */
+    function updateHistoryBadges() {
+      const count = appState.quotes.length;
+      const dBadge = document.getElementById('badge-history-desktop');
+      const mBadge = document.getElementById('badge-history-mobile');
+      if (count > 0) {
+        dBadge.textContent = count;
+        dBadge.classList.remove('hidden');
+        mBadge.textContent = count;
+        mBadge.classList.remove('hidden');
+      } else {
+        dBadge.classList.add('hidden');
+        mBadge.classList.add('hidden');
+      }
+    }
+
+    function setHistoryFilter(filter) {
+      appState.historyFilter = filter;
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const all = appState.quotes;
+      const pendientes = all.filter(q => q.status !== 'aceptada');
+      const aceptadas = all.filter(q => q.status === 'aceptada');
+
+      document.getElementById('count-all').textContent = all.length;
+      document.getElementById('count-pendiente').textContent = pendientes.length;
+      document.getElementById('count-aceptada').textContent = aceptadas.length;
+
+      document.querySelectorAll('.hfilter-btn').forEach(btn => {
+        const active = btn.dataset.hfilter === appState.historyFilter;
+        btn.className = `hfilter-btn touch-btn px-3.5 py-2 rounded-xl text-xs font-bold transition ${
+          active ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+        }`;
+      });
+
+      const term = (document.getElementById('history-search').value || '').toLowerCase().trim();
+      let filtered = all;
+      if (appState.historyFilter === 'pendiente') filtered = pendientes;
+      if (appState.historyFilter === 'aceptada') filtered = aceptadas;
+
+      if (term) {
+        filtered = filtered.filter(q => {
+          const hay = `${q.clientName} ${q.categoryName} ${q.folio} ${q.eventDate} ${formatSpanishDateLong(q.eventDate)} ${q.location}`.toLowerCase();
+          return hay.includes(term);
+        });
+      }
+
+      const listEl = document.getElementById('history-list');
+      if (!filtered.length) {
+        listEl.innerHTML = `
+          <div class="md:col-span-2 bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center">
+            <p class="text-3xl mb-2">🗂️</p>
+            <h3 class="text-base font-extrabold text-slate-800">Sin cotizaciones para mostrar</h3>
+            <p class="text-xs text-slate-500 mt-1 mb-4">Crea una cotización en la pestaña "Cotizar" o presiona "Sincronizar nube" para traer las del otro iPhone.</p>
+            <button type="button" onclick="startNewQuote(false)" class="touch-btn bg-slate-900 text-white text-xs font-bold px-5 py-2.5 rounded-xl">
+              + Nueva Cotización
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(q => {
+        const t = computeTotals(q);
+        const isAccepted = q.status === 'aceptada';
+        const badgeHTML = isAccepted
+          ? `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">✓ ${q.calendarSynced ? 'Agendada en Calendar' : 'Aceptada'}</span>`
+          : `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200">⏳ Pendiente / Enviada</span>`;
+
+        return `
+          <article class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 flex flex-col justify-between gap-3.5 hover:border-amber-300 transition">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="font-mono text-[11px] font-extrabold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">${escapeHTML(q.folio)}</span>
+                ${badgeHTML}
+              </div>
+
+              <h3 class="text-base font-extrabold text-slate-900 leading-snug">${escapeHTML(q.clientName || 'Sin nombre')}</h3>
+              <p class="text-xs font-bold text-amber-700 mt-0.5">${escapeHTML(q.categoryIcon || '✨')} ${escapeHTML(q.categoryName)}</p>
+
+              <div class="mt-2.5 space-y-1 text-xs text-slate-600">
+                <p>📅 ${escapeHTML(formatSpanishDateLong(q.eventDate))} · ${escapeHTML(q.startTime || '')}–${escapeHTML(q.endTime || '')}</p>
+                ${q.location ? `<p class="truncate">📍 ${escapeHTML(q.location)}</p>` : ''}
+              </div>
+
+              <div class="mt-3 pt-3 border-t border-slate-100 flex items-baseline justify-between">
+                <span class="text-xs text-slate-500">Total cotizado</span>
+                <span class="text-lg font-extrabold text-slate-900">${formatCLP(t.total)}</span>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <button type="button" onclick="acceptAndScheduleById('${q.id}')"
+                class="touch-btn w-full py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition active:scale-[0.98] flex items-center justify-center gap-1.5 ${
+                  isAccepted && q.calendarSynced
+                    ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
+                }">
+                <span>${isAccepted && q.calendarSynced ? '✅' : '📅'}</span>
+                <span>${isAccepted && q.calendarSynced ? 'Agendada en Calendar ✓ (Re-agendar)' : 'Aceptar y Agendar en Google Calendar'}</span>
+              </button>
+
+              <div class="grid grid-cols-4 gap-1.5">
+                <button type="button" onclick="openQuotePDF('${q.id}')" class="touch-btn bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2 rounded-xl transition">PDF</button>
+                <button type="button" onclick="editQuoteById('${q.id}')" class="touch-btn bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2 rounded-xl transition">Editar</button>
+                <button type="button" onclick="duplicateQuoteById('${q.id}')" class="touch-btn bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2 rounded-xl transition">Duplicar</button>
+                <button type="button" onclick="confirmDeleteQuote('${q.id}')" class="touch-btn bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold py-2 rounded-xl transition">Eliminar</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function openQuotePDF(id) {
+      const found = appState.quotes.find(q => q.id === id);
+      if (!found) return;
+      appState.draft = cloneObj(found);
+      populateFormFromDraft();
+      renderCategoryGrid();
+      renderQuickExtrasChips();
+      renderActiveExtras();
+      updateLiveSummary();
+      renderPDFDocument();
+      switchTab('pdf');
+    }
+
+    function editQuoteById(id) {
+      const found = appState.quotes.find(q => q.id === id);
+      if (!found) return;
+      appState.draft = cloneObj(found);
+      populateFormFromDraft();
+      renderCategoryGrid();
+      renderQuickExtrasChips();
+      renderActiveExtras();
+      updateLiveSummary();
+      switchTab('cotizar');
+      showToast(`Editando ${found.folio}`, 'info');
+    }
+
+    function duplicateQuoteById(id) {
+      const found = appState.quotes.find(q => q.id === id);
+      if (!found) return;
+      const copy = cloneObj(found);
+      copy.id = null;
+      copy.folio = generateFolio(appState.config.nextCorrelative);
+      copy.issueDate = formatTodayYMD();
+      copy.status = 'pendiente';
+      copy.calendarSynced = false;
+      copy.clientName = found.clientName ? `${found.clientName} (Copia)` : '';
+      appState.draft = copy;
+      populateFormFromDraft();
+      renderCategoryGrid();
+      renderQuickExtrasChips();
+      renderActiveExtras();
+      updateLiveSummary();
+      switchTab('cotizar');
+      showToast('Cotización duplicada. Ajusta los datos y guarda.', 'success');
+    }
+
+    function confirmDeleteQuote(id) {
+      const q = appState.quotes.find(item => item.id === id);
+      if (!q) return;
+      openModal(`
+        <div class="text-center">
+          <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-3">🗑️</div>
+          <h3 class="text-lg font-extrabold text-slate-900">¿Eliminar cotización?</h3>
+          <p class="text-sm text-slate-600 mt-1">Se eliminará <strong>${escapeHTML(q.folio)}</strong> de ${escapeHTML(q.clientName || 'Cliente')}.</p>
+          <div class="grid grid-cols-2 gap-3 mt-5">
+            <button type="button" onclick="closeModal()" class="touch-btn py-3 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 text-sm">Cancelar</button>
+            <button type="button" onclick="executeDeleteQuote('${id}')" class="touch-btn py-3 rounded-xl bg-rose-600 hover:bg-rose-500 font-bold text-white text-sm">Sí, eliminar</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function executeDeleteQuote(id) {
+      appState.quotes = appState.quotes.filter(q => q.id !== id);
+      if (appState.draft && appState.draft.id === id) appState.draft.id = null;
+      saveState();
+      closeModal();
+      renderHistory();
+      showToast('Cotización eliminada', 'info');
+
+      // Elimina también de la nube si está conectada
+      if ((appState.config.gasUrl || '').startsWith('https://script.google.com/')) {
+        postToAppsScript({ action: 'deleteQuote', id }).catch(() => {});
+      }
+    }
+
+    /* -------------------------------------------------------------------
+       12. RESERVA EN 1 CLIC EN GOOGLE CALENDAR + SINCRONIZACIÓN 2 iPHONE
+    ------------------------------------------------------------------- */
+    async function postToAppsScript(payload) {
+      const url = (appState.config.gasUrl || '').trim();
+      if (!url || !url.startsWith('https://script.google.com/')) {
+        throw new Error('URL de Apps Script no configurada');
+      }
+      // Usamos text/plain para evitar preflight CORS y poder leer respuesta JSON en Apps Script
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const text = await res.text();
+          try { return JSON.parse(text); } catch { return { status: 'ok' }; }
+        }
+      } catch (corsErr) {
+        // Fallback silencioso a no-cors si el entorno bloquea lectura de respuesta
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        return { status: 'ok', opaque: true };
+      }
+      return { status: 'ok' };
+    }
+
+    function pushQuoteToCloudSilent(quoteObj) {
+      postToAppsScript({ action: 'saveQuote', quote: quoteObj }).catch(err => {
+        console.warn('Sincronización en segundo plano pendiente:', err);
+      });
+    }
+
+    async function syncQuotesFromCloud(silent = false) {
+      const url = (appState.config.gasUrl || '').trim();
+      if (!url || !url.startsWith('https://script.google.com/')) {
+        if (!silent) {
+          showToast('Configura primero la URL de Google Apps Script en la pestaña Ajustes.', 'info');
+        }
+        return;
+      }
+
+      const syncIcon = document.getElementById('sync-icon');
+      if (syncIcon) syncIcon.textContent = '⏳';
+
+      try {
+        const fetchUrl = `${url}${url.includes('?') ? '&' : '?'}action=getQuotes&t=${Date.now()}`;
+        const res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error('Respuesta no válida');
+        const data = await res.json();
+
+        if (data && Array.isArray(data.quotes)) {
+          // Fusión inteligente por ID usando el registro más reciente (updatedAt)
+          const map = new Map();
+          appState.quotes.forEach(q => map.set(q.id, q));
+
+          data.quotes.forEach(remoteQ => {
+            if (!remoteQ || !remoteQ.id) return;
+            const localQ = map.get(remoteQ.id);
+            if (!localQ) {
+              map.set(remoteQ.id, remoteQ);
+            } else {
+              const localTime = new Date(localQ.updatedAt || 0).getTime();
+              const remoteTime = new Date(remoteQ.updatedAt || 0).getTime();
+              if (remoteTime >= localTime) {
+                map.set(remoteQ.id, remoteQ);
+              }
+            }
+          });
+
+          const merged = Array.from(map.values()).sort((a, b) => {
+            return new Date(b.updatedAt || b.issueDate || 0) - new Date(a.updatedAt || a.issueDate || 0);
+          });
+
+          appState.quotes = merged;
+
+          // Actualiza correlativo para evitar folios repetidos entre los 2 iPhone
+          let maxNum = appState.config.nextCorrelative || 1;
+          merged.forEach(q => {
+            const match = String(q.folio || '').match(/(\d+)$/);
+            if (match) {
+              const n = parseInt(match[1], 10);
+              if (n >= maxNum) maxNum = n + 1;
+            }
+          });
+          appState.config.nextCorrelative = maxNum;
+
+          saveState();
+          renderHistory();
+
+          // Sube las cotizaciones locales que no estaban en la nube
+          const remoteIds = new Set(data.quotes.map(q => q.id));
+          const missingInCloud = appState.quotes.filter(q => !remoteIds.has(q.id));
+          for (const mq of missingInCloud) {
+            await postToAppsScript({ action: 'saveQuote', quote: mq });
+          }
+
+          if (!silent) showToast(`☁️ Nube sincronizada (${merged.length} cotizaciones al día)`, 'success');
+        } else {
+          if (!silent) showToast('Conexión activa, sin cotizaciones nuevas en la nube.', 'info');
+        }
+      } catch (err) {
+        console.error('Error sincronizando nube:', err);
+        if (!silent) showToast('No se pudo sincronizar. Revisa la URL y permisos ("Cualquier usuario") en Apps Script.', 'error');
+      } finally {
+        if (syncIcon) syncIcon.textContent = '☁️';
+      }
+    }
+
+    function buildManualGoogleCalendarURL(q) {
+      const t = computeTotals(q);
+      const title = `${q.categoryIcon || '🎉'} ${q.categoryName} - ${q.clientName || 'Cliente'} (${appState.config.brandName})`;
+      const location = q.location || '';
+      const details = [
+        `📋 Folio: ${q.folio}`,
+        `👤 Cliente: ${q.clientName || 'Por confirmar'}`,
+        q.clientPhone ? `📱 Teléfono / WhatsApp: ${q.clientPhone}` : null,
+        q.clientEmail ? `✉️ Correo: ${q.clientEmail}` : null,
+        q.guests ? `👥 Invitados aprox.: ${q.guests}` : null,
+        ``,
+        `💰 Total: ${formatCLP(t.total)}`,
+        `📌 Abono reserva: ${formatCLP(t.deposit)}`,
+        `🧾 Saldo día del evento: ${formatCLP(t.balance)}`,
+        (q.extras && q.extras.length) ? `➕ Extras: ${q.extras.map(e => `${e.name} (${formatCLP(e.price)})`).join(', ')}` : null,
+        ``,
+        `🎤 Servicio:`,
+        q.serviceDesc || ''
+      ].filter(x => x !== null).join('\n');
+
+      let datesParam = '';
+      const dt = parseLocalDate(q.eventDate);
+      if (dt) {
+        const [sh, sm] = (q.startTime || '16:00').split(':').map(Number);
+        const [eh, em] = (q.endTime || '19:00').split(':').map(Number);
+        const startDt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), sh || 16, sm || 0);
+        const dur = calculateDurationInfo(q.startTime, q.endTime);
+        const endDt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() + (dur.crossesMidnight ? 1 : 0), eh || 19, em || 0);
+        const fmt = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}00`;
+        datesParam = `&dates=${fmt(startDt)}/${fmt(endDt)}`;
+      }
+
+      return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}${datesParam}&location=${encodeURIComponent(location)}&details=${encodeURIComponent(details)}&ctz=America/Santiago`;
+    }
+
+    async function acceptAndScheduleCurrent() {
+      const saved = persistCurrentDraft(true);
+      await runAcceptAndSchedule(saved.id);
+    }
+
+    async function acceptAndScheduleById(id) {
+      await runAcceptAndSchedule(id);
+    }
+
+    async function runAcceptAndSchedule(id) {
+      const q = appState.quotes.find(item => item.id === id);
+      if (!q) return;
+
+      if (!q.eventDate) {
+        showToast('Agrega la fecha del evento antes de agendar en Google Calendar.', 'error');
+        editQuoteById(id);
+        document.getElementById('q-event-date').focus();
+        return;
+      }
+
+      q.status = 'aceptada';
+      q.updatedAt = new Date().toISOString();
+
+      const t = computeTotals(q);
+      const dur = calculateDurationInfo(q.startTime, q.endTime);
+      const manualUrl = buildManualGoogleCalendarURL(q);
+      const gasUrl = (appState.config.gasUrl || '').trim();
+      const calendarName = (appState.config.calendarName || 'Animaciones Divertidas').trim();
+
+      const eventPayload = {
+        action: 'acceptAndSchedule',
+        calendarName,
+        quote: q,
+        event: {
+          title: `${q.categoryIcon || '🎉'} ${q.categoryName} - ${q.clientName || 'Cliente'}`,
+          date: q.eventDate,
+          startTime: q.startTime || '16:00',
+          endTime: q.endTime || '19:00',
+          crossesMidnight: dur.crossesMidnight,
+          location: q.location || '',
+          description: [
+            `📋 Folio: ${q.folio}`,
+            `👤 Cliente: ${q.clientName || 'Sin nombre'}`,
+            `📱 Teléfono / WhatsApp: ${q.clientPhone || 'No indicado'}`,
+            q.clientEmail ? `✉️ Correo: ${q.clientEmail}` : null,
+            q.guests ? `👥 Invitados aprox.: ${q.guests}` : null,
+            `🛡️ Ambiente 100% familiar: ${q.familyFriendly ? 'Sí' : 'No especificado'}`,
+            `🎥 Videollamada previa: ${q.includeVideocall ? 'Sí' : 'No'}`,
+            ``,
+            `💰 RESUMEN FINANCIERO:`,
+            `• Total: ${formatCLP(t.total)}`,
+            `• Abono reserva: ${formatCLP(t.deposit)}`,
+            `• Saldo día del evento: ${formatCLP(t.balance)}`,
+            (q.extras && q.extras.length) ? `• Extras: ${q.extras.map(e => `${e.name} (${formatCLP(e.price)})`).join(', ')}` : null,
+            ``,
+            `🎤 SERVICIO (${q.serviceTitle}):`,
+            q.serviceDesc || ''
+          ].filter(x => x !== null).join('\n')
+        }
+      };
+
+      if (gasUrl && gasUrl.startsWith('https://script.google.com/')) {
+        openModal(`
+          <div class="text-center py-5">
+            <div class="w-12 h-12 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin mx-auto mb-3.5"></div>
+            <h3 class="text-lg font-extrabold text-slate-900">Reservando en Google Calendar...</h3>
+            <p class="text-xs text-slate-500 mt-1">Calendario: <strong>${escapeHTML(calendarName)}</strong> + sincronizando nube</p>
+          </div>
+        `);
+
+        try {
+          await postToAppsScript(eventPayload);
+          q.calendarSynced = true;
+          if (appState.draft && appState.draft.id === q.id) {
+            appState.draft.status = 'aceptada';
+            appState.draft.calendarSynced = true;
+          }
+          saveState();
+          renderHistory();
+          if (appState.activeTab === 'pdf') renderPDFDocument();
+
+          openModal(`
+            <div class="text-center">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-3">✅</div>
+              <h3 class="text-xl font-extrabold text-slate-900">¡Evento Agendado y Reservado!</h3>
+              <p class="text-xs sm:text-sm text-slate-600 mt-1.5">
+                La cotización <strong>${escapeHTML(q.folio)}</strong> pasó a <strong>Aceptada</strong>, se agendó automáticamente en <strong>"${escapeHTML(calendarName)}"</strong> y se actualizó en la nube para ambos iPhone.
+              </p>
+
+              <div class="mt-4 bg-slate-50 rounded-2xl border border-slate-200 p-3.5 text-left text-xs space-y-1">
+                <p><strong>Evento:</strong> ${escapeHTML(eventPayload.event.title)}</p>
+                <p><strong>Fecha:</strong> ${escapeHTML(formatSpanishDateLong(q.eventDate))} (${escapeHTML(q.startTime)}–${escapeHTML(q.endTime)})</p>
+                <p><strong>Total:</strong> ${formatCLP(t.total)} · <strong>Saldo:</strong> ${formatCLP(t.balance)}</p>
+              </div>
+
+              <div class="mt-5 space-y-2.5">
+                <button type="button" onclick="closeModal()" class="touch-btn w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm">
+                  Excelente, cerrar
+                </button>
+                <a href="${manualUrl}" target="_blank" rel="noopener noreferrer" class="touch-btn flex items-center justify-center w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                  🔗 Abrir en Google Calendar (respaldo manual)
+                </a>
+              </div>
+            </div>
+          `);
+        } catch (err) {
+          console.error('Error enviando a Calendar:', err);
+          saveState();
+          renderHistory();
+          openModal(`
+            <div class="text-center">
+              <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl mx-auto mb-3">⚠️</div>
+              <h3 class="text-lg font-extrabold text-slate-900">Aceptada localmente (sin conexión al script)</h3>
+              <p class="text-xs text-slate-600 mt-1">No logramos conectar con Apps Script en este momento. Puedes agendarla al instante usando el botón manual:</p>
+              <div class="mt-4 space-y-2.5">
+                <a href="${manualUrl}" target="_blank" rel="noopener noreferrer" onclick="markManualSynced('${q.id}')" class="touch-btn flex items-center justify-center w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm">
+                  📅 Abrir en Google Calendar (manual)
+                </a>
+                <button type="button" onclick="closeModal()" class="touch-btn w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cerrar</button>
+              </div>
+            </div>
+          `);
+        }
+      } else {
+        // Sin URL de Apps Script configurada aún: marca Aceptada y ofrece link manual + acceso a Ajustes
+        if (appState.draft && appState.draft.id === q.id) {
+          appState.draft.status = 'aceptada';
+        }
+        saveState();
+        renderHistory();
+        if (appState.activeTab === 'pdf') renderPDFDocument();
+
+        openModal(`
+          <div class="text-center">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-3">🎉</div>
+            <h3 class="text-xl font-extrabold text-slate-900">¡Cotización Aceptada!</h3>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1.5">
+              El estado cambió a <strong>Aceptada</strong>. Como aún no has pegado la URL automática en <em>Ajustes</em>, puedes agendarla ahora mismo con el enlace prellenado:
+            </p>
+            <div class="mt-4 space-y-2.5">
+              <a href="${manualUrl}" target="_blank" rel="noopener noreferrer" onclick="markManualSynced('${q.id}')" class="touch-btn flex items-center justify-center w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-md">
+                📅 Abrir en Google Calendar (manual)
+              </a>
+              <button type="button" onclick="closeModal(); switchTab('ajustes');" class="touch-btn w-full py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-bold text-xs">
+                ⚙️ Configurar agendamiento automático (1 clic)
+              </button>
+              <button type="button" onclick="closeModal()" class="touch-btn w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">
+                Cerrar
+              </button>
+            </div>
+          </div>
+        `);
+      }
+    }
+
+    function markManualSynced(id) {
+      const q = appState.quotes.find(item => item.id === id);
+      if (q) {
+        q.calendarSynced = true;
+        if (appState.draft && appState.draft.id === id) appState.draft.calendarSynced = true;
+        saveState();
+        renderHistory();
+        if (appState.activeTab === 'pdf') renderPDFDocument();
+      }
+      closeModal();
+    }
+
+    /* -------------------------------------------------------------------
+       13. MÓDULO 4: AJUSTES, LOGO CANVAS, APPS SCRIPT Y BACKUP JSON
+    ------------------------------------------------------------------- */
+    function populateConfigForm() {
+      const c = appState.config;
+      document.getElementById('cfg-brand-name').value = c.brandName || '';
+      document.getElementById('cfg-brand-slogan').value = c.brandSlogan || '';
+      document.getElementById('cfg-host').value = c.host || '';
+      document.getElementById('cfg-city').value = c.city || '';
+      document.getElementById('cfg-whatsapp').value = c.whatsapp || '';
+      document.getElementById('cfg-instagram').value = c.instagram || '';
+      document.getElementById('cfg-default-deposit').value = c.defaultDeposit ?? 20000;
+      document.getElementById('cfg-default-validity').value = c.defaultValidityDays ?? 15;
+      document.getElementById('cfg-default-terms').value = c.defaultTerms || '';
+
+      const bToggle = document.getElementById('toggle-show-bank');
+      bToggle.classList.toggle('active', !!c.showBankDetails);
+      document.getElementById('bank-fields-grid').classList.toggle('opacity-50', !c.showBankDetails);
+
+      document.getElementById('cfg-bank-name').value = c.bank.name || '';
+      document.getElementById('cfg-bank-type').value = c.bank.type || '';
+      document.getElementById('cfg-bank-number').value = c.bank.number || '';
+      document.getElementById('cfg-bank-holder').value = c.bank.holder || '';
+      document.getElementById('cfg-bank-rut').value = c.bank.rut || '';
+      document.getElementById('cfg-bank-email').value = c.bank.email || '';
+
+      document.getElementById('cfg-gas-url').value = c.gasUrl || '';
+      document.getElementById('cfg-calendar-name').value = c.calendarName || 'Animaciones Divertidas';
+
+      const sel = document.getElementById('cfg-cat-select');
+      sel.innerHTML = appState.categories.map(cat => `<option value="${cat.id}">${cat.icon || '✨'} ${escapeHTML(cat.name)} (${formatCLP(cat.basePrice)})</option>`).join('');
+      loadCategoryEditor();
+      renderConfigExtrasList();
+      refreshAppsScriptPreview();
+      refreshBrandUI();
+    }
+
+    function toggleShowBank() {
+      appState.config.showBankDetails = !appState.config.showBankDetails;
+      document.getElementById('toggle-show-bank').classList.toggle('active', appState.config.showBankDetails);
+      document.getElementById('bank-fields-grid').classList.toggle('opacity-50', !appState.config.showBankDetails);
+    }
+
+    function saveBrandConfig() {
+      const c = appState.config;
+      c.brandName = document.getElementById('cfg-brand-name').value.trim() || 'Animaciones Divertidas';
+      c.brandSlogan = document.getElementById('cfg-brand-slogan').value.trim() || 'Tu evento es nuestro evento';
+      c.host = document.getElementById('cfg-host').value.trim();
+      c.city = document.getElementById('cfg-city').value.trim();
+      c.whatsapp = document.getElementById('cfg-whatsapp').value.trim();
+      c.instagram = document.getElementById('cfg-instagram').value.trim();
+      c.defaultDeposit = toInt(document.getElementById('cfg-default-deposit').value);
+      c.defaultValidityDays = Math.max(1, toInt(document.getElementById('cfg-default-validity').value) || 15);
+      c.defaultTerms = document.getElementById('cfg-default-terms').value.trim();
+      c.bank = {
+        name: document.getElementById('cfg-bank-name').value.trim(),
+        type: document.getElementById('cfg-bank-type').value.trim(),
+        number: document.getElementById('cfg-bank-number').value.trim(),
+        holder: document.getElementById('cfg-bank-holder').value.trim(),
+        rut: document.getElementById('cfg-bank-rut').value.trim(),
+        email: document.getElementById('cfg-bank-email').value.trim()
+      };
+      saveState();
+      refreshBrandUI();
+      showToast('Identidad y datos guardados ✓', 'success');
+    }
+
+    // Compresión automática en Canvas para fotos desde galería del iPhone
+    function handleLogoUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showToast('Selecciona una imagen válida (PNG, JPG o WEBP)', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const MAX_DIM = 300;
+          let w = img.width;
+          let h = img.height;
+          if (w > MAX_DIM || h > MAX_DIM) {
+            if (w > h) {
+              h = Math.round((h * MAX_DIM) / w);
+              w = MAX_DIM;
+            } else {
+              w = Math.round((w * MAX_DIM) / h);
+              h = MAX_DIM;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+
+          let dataUrl = canvas.toDataURL('image/png');
+          if (dataUrl.length > 150000) {
+            dataUrl = canvas.toDataURL('image/jpeg', 0.84);
+          }
+
+          appState.config.logoDataUrl = dataUrl;
+          saveState();
+          refreshBrandUI();
+          showToast('Logo cargado y comprimido con éxito ✓', 'success');
+        };
+        img.onerror = () => showToast('No se pudo leer la imagen seleccionada.', 'error');
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    function useDefaultLogoPng() {
+      appState.config.logoDataUrl = '';
+      saveState();
+      refreshBrandUI();
+      showToast('Usando logo.png por defecto (o emblema AD si aún no existe)', 'info');
+    }
+
+    // Editor de las 10 categorías
+    function loadCategoryEditor() {
+      const catId = document.getElementById('cfg-cat-select').value;
+      const cat = appState.categories.find(c => c.id === catId);
+      if (!cat) return;
+      document.getElementById('cfg-cat-price').value = cat.basePrice;
+      document.getElementById('cfg-cat-hours').value = cat.hours;
+      document.getElementById('cfg-cat-style').value = cat.pdfStyle || 'gala';
+      document.getElementById('cfg-cat-desc').value = cat.description || '';
+    }
+
+    function saveCategoryEditor() {
+      const catId = document.getElementById('cfg-cat-select').value;
+      const cat = appState.categories.find(c => c.id === catId);
+      if (!cat) return;
+      cat.basePrice = toInt(document.getElementById('cfg-cat-price').value);
+      cat.hours = Math.max(1, toInt(document.getElementById('cfg-cat-hours').value) || 3);
+      cat.pdfStyle = document.getElementById('cfg-cat-style').value;
+      cat.description = document.getElementById('cfg-cat-desc').value.trim();
+
+      saveState();
+      populateConfigForm();
+      document.getElementById('cfg-cat-select').value = catId;
+      loadCategoryEditor();
+      renderCategoryGrid();
+      showToast(`Categoría "${cat.name}" actualizada ✓`, 'success');
+    }
+
+    function confirmResetCatalog() {
+      openModal(`
+        <div class="text-center">
+          <h3 class="text-lg font-extrabold text-slate-900">¿Restaurar catálogo original?</h3>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1">Se restaurarán las 10 categorías y 6 extras rápidos originales. Tu historial y logo no se borrarán.</p>
+          <div class="grid grid-cols-2 gap-3 mt-5">
+            <button type="button" onclick="closeModal()" class="touch-btn py-3 rounded-xl bg-slate-100 font-bold text-slate-700 text-sm">Cancelar</button>
+            <button type="button" onclick="executeResetCatalog()" class="touch-btn py-3 rounded-xl bg-amber-500 font-extrabold text-slate-950 text-sm">Restaurar</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function executeResetCatalog() {
+      appState.categories = cloneObj(DEFAULT_CATEGORIES);
+      appState.quickExtras = cloneObj(DEFAULT_QUICK_EXTRAS);
+      saveState();
+      populateConfigForm();
+      renderCategoryGrid();
+      renderQuickExtrasChips();
+      closeModal();
+      showToast('Catálogo restaurado ✓', 'success');
+    }
+
+    function renderConfigExtrasList() {
+      const box = document.getElementById('cfg-extras-list');
+      box.innerHTML = appState.quickExtras.map((ex, idx) => `
+        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2">
+          <input type="text" value="${escapeHTML(ex.name)}" onchange="updateCatalogExtra(${idx}, 'name', this.value)" class="touch-btn flex-1 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-amber-500">
+          <input type="number" inputmode="numeric" step="1000" value="${ex.price}" onchange="updateCatalogExtra(${idx}, 'price', this.value)" class="touch-btn w-28 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-right font-bold text-sm outline-none focus:border-amber-500">
+          <button type="button" onclick="deleteCatalogExtra(${idx})" class="w-10 h-10 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold flex items-center justify-center">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function updateCatalogExtra(index, field, val) {
+      if (!appState.quickExtras[index]) return;
+      appState.quickExtras[index][field] = field === 'price' ? toInt(val) : val.trim();
+      saveState();
+      renderQuickExtrasChips();
+      showToast('Extra actualizado', 'info');
+    }
+
+    function deleteCatalogExtra(index) {
+      appState.quickExtras.splice(index, 1);
+      saveState();
+      renderConfigExtrasList();
+      renderQuickExtrasChips();
+    }
+
+    function addCatalogExtra() {
+      const nameEl = document.getElementById('cfg-new-extra-name');
+      const priceEl = document.getElementById('cfg-new-extra-price');
+      const name = nameEl.value.trim();
+      const price = toInt(priceEl.value);
+      if (!name) {
+        showToast('Escribe el nombre del extra rápido', 'error');
+        return;
+      }
+      appState.quickExtras.push({ id: 'ext_' + Date.now(), name, price });
+      nameEl.value = '';
+      priceEl.value = '';
+      saveState();
+      renderConfigExtrasList();
+      renderQuickExtrasChips();
+      showToast(`Extra "${name}" añadido ✓`, 'success');
+    }
+
+    // Conexión Google Calendar + Sincronización 2 iPhone (Apps Script doPost + doGet)
+    function saveCalendarConfig() {
+      appState.config.gasUrl = document.getElementById('cfg-gas-url').value.trim();
+      appState.config.calendarName = document.getElementById('cfg-calendar-name').value.trim() || 'Animaciones Divertidas';
+      saveState();
+      refreshAppsScriptPreview();
+      showToast('Conexión Google Calendar guardada ✓', 'success');
+    }
+
+    async function testCalendarConnection() {
+      saveCalendarConfig();
+      const url = appState.config.gasUrl;
+      if (!url || !url.startsWith('https://script.google.com/')) {
+        showToast('Pega primero una URL válida de Google Apps Script (https://script.google.com/macros/s/.../exec)', 'error');
+        return;
+      }
+      showToast('Probando conexión con Google Apps Script...', 'info');
+      try {
+        const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}action=ping&t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.status === 'ok') {
+            showToast(`✅ Conexión exitosa · Calendario: ${data.calendarFound ? appState.config.calendarName : 'Principal (por defecto)'}`, 'success');
+            return;
+          }
+        }
+        throw new Error('Error de verificación');
+      } catch (err) {
+        try {
+          await postToAppsScript({ action: 'ping', calendarName: appState.config.calendarName });
+          showToast('✅ Señal enviada correctamente. Conexión activa.', 'success');
+        } catch (e2) {
+          showToast('No se pudo conectar. Verifica que el Web App esté publicado para "Cualquier usuario".', 'error');
+        }
+      }
+    }
+
+    function getAppsScriptCode() {
+      const calName = (appState.config.calendarName || 'Animaciones Divertidas').replace(/"/g, '\\"');
+      return `// ======================================================================
+// GOOGLE APPS SCRIPT · ANIMACIONES DIVERTIDAS - COTIZADOR PROFESIONAL
+// 1) Agenda automáticamente eventos en el calendario "${calName}"
+// 2) Guarda y lee cotizaciones en la hoja "Cotizaciones" para 2 iPhone
+// ======================================================================
+
+var DEFAULT_CALENDAR_NAME = "${calName}";
+var SHEET_TAB_NAME = "Cotizaciones";
+
+function getOrCreateSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_TAB_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_TAB_NAME);
+    sheet.appendRow(["ID", "Folio", "Cliente", "Evento", "Fecha", "TotalCLP", "Estado", "Actualizado", "JSON"]);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function upsertQuote_(quote) {
+  if (!quote || !quote.id) return;
+  var sheet = getOrCreateSheet_();
+  var data = sheet.getDataRange().getValues();
+  var totals = (Number(quote.basePrice) || 0) + (Number(quote.transport) || 0) - (Number(quote.discount) || 0);
+  if (quote.extras && quote.extras.length) {
+    for (var k = 0; k < quote.extras.length; k++) {
+      totals += Number(quote.extras[k].price) || 0;
+    }
+  }
+  var rowValues = [
+    quote.id,
+    quote.folio || "",
+    quote.clientName || "",
+    quote.categoryName || "",
+    quote.eventDate || "",
+    Math.max(0, totals),
+    quote.status || "pendiente",
+    quote.updatedAt || new Date().toISOString(),
+    JSON.stringify(quote)
+  ];
+
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(quote.id)) {
+      sheet.getRange(i + 1, 1, 1, rowValues.length).setValues([rowValues]);
+      return;
+    }
+  }
+  sheet.appendRow(rowValues);
+}
+
+function deleteQuoteById_(id) {
+  if (!id) return;
+  var sheet = getOrCreateSheet_();
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(id)) {
+      sheet.deleteRow(i + 1);
+      return;
+    }
+  }
+}
+
+function createCalendarEvent_(calendarName, ev) {
+  var target = calendarName || DEFAULT_CALENDAR_NAME;
+  var cals = CalendarApp.getCalendarsByName(target);
+  var cal = cals.length > 0 ? cals[0] : CalendarApp.getDefaultCalendar();
+
+  var dParts = String(ev.date).split("-");
+  var sParts = String(ev.startTime || "16:00").split(":");
+  var eParts = String(ev.endTime || "19:00").split(":");
+
+  var y = Number(dParts[0]);
+  var m = Number(dParts[1]) - 1;
+  var d = Number(dParts[2]);
+
+  var startDt = new Date(y, m, d, Number(sParts[0]), Number(sParts[1]), 0);
+  var endDt = new Date(y, m, ev.crossesMidnight ? d + 1 : d, Number(eParts[0]), Number(eParts[1]), 0);
+
+  var created = cal.createEvent(ev.title, startDt, endDt, {
+    location: ev.location || "",
+    description: ev.description || ""
+  });
+  created.setColor(CalendarApp.EventColor.GREEN);
+  return created.getId();
+}
+
+function doGet(e) {
+  try {
+    var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "getQuotes";
+
+    if (action === "ping") {
+      var cals = CalendarApp.getCalendarsByName(DEFAULT_CALENDAR_NAME);
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "ok",
+        calendarFound: cals.length > 0
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var sheet = getOrCreateSheet_();
+    var rows = sheet.getDataRange().getValues();
+    var quotes = [];
+    for (var i = 1; i < rows.length; i++) {
+      var rawJson = rows[i][8];
+      if (rawJson) {
+        try { quotes.push(JSON.parse(rawJson)); } catch (err) {}
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "ok",
+      quotes: quotes
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+
+    if (data.action === "ping") {
+      return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (data.action === "saveQuote") {
+      upsertQuote_(data.quote);
+      return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (data.action === "deleteQuote") {
+      deleteQuoteById_(data.id);
+      return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (data.action === "acceptAndSchedule") {
+      var eventId = createCalendarEvent_(data.calendarName, data.event);
+      if (data.quote) {
+        data.quote.status = "aceptada";
+        data.quote.calendarSynced = true;
+        upsertQuote_(data.quote);
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "ok",
+        eventId: eventId
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+    }
+
+    function refreshAppsScriptPreview() {
+      const pre = document.getElementById('apps-script-preview');
+      if (pre) pre.textContent = getAppsScriptCode();
+    }
+
+    function copyAppsScriptCode() {
+      copyTextToClipboard(getAppsScriptCode(), 'Código Google Apps Script copiado 📋');
+    }
+
+    // Respaldo JSON Exportar / Importar
+    function exportBackupJSON() {
+      const payload = {
+        app: 'Animaciones Divertidas - Cotizador Profesional',
+        exportedAt: new Date().toISOString(),
+        config: appState.config,
+        categories: appState.categories,
+        quickExtras: appState.quickExtras,
+        quotes: appState.quotes
+      };
+      try {
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `respaldo_animaciones_divertidas_${formatTodayYMD()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Archivo de respaldo .json exportado ✓', 'success');
+      } catch (err) {
+        copyTextToClipboard(JSON.stringify(payload), 'Respaldo JSON copiado al portapapeles');
+      }
+    }
+
+    function handleImportJSON(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed.config || !Array.isArray(parsed.categories)) {
+            throw new Error('Archivo inválido');
+          }
+          openModal(`
+            <div class="text-center">
+              <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-3">🔄</div>
+              <h3 class="text-lg font-extrabold text-slate-900">¿Cargar respaldo JSON?</h3>
+              <p class="text-xs sm:text-sm text-slate-600 mt-1">Se restaurará la marca, logo, tarifas y <strong>${(parsed.quotes || []).length} cotizaciones</strong> del respaldo.</p>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <button type="button" onclick="closeModal()" class="touch-btn py-3 rounded-xl bg-slate-100 font-bold text-slate-700 text-sm">Cancelar</button>
+                <button type="button" id="confirm-import-btn" class="touch-btn py-3 rounded-xl bg-slate-900 font-extrabold text-white text-sm">Sí, cargar</button>
+              </div>
+            </div>
+          `);
+          document.getElementById('confirm-import-btn').onclick = function () {
+            appState.config = {
+              ...cloneObj(DEFAULT_CONFIG),
+              ...parsed.config,
+              bank: { ...cloneObj(DEFAULT_CONFIG.bank), ...(parsed.config.bank || {}) }
+            };
+            appState.categories = parsed.categories;
+            if (Array.isArray(parsed.quickExtras)) appState.quickExtras = parsed.quickExtras;
+            if (Array.isArray(parsed.quotes)) appState.quotes = parsed.quotes;
+            saveState();
+            populateConfigForm();
+            renderCategoryGrid();
+            renderQuickExtrasChips();
+            renderHistory();
+            closeModal();
+            showToast('Respaldo importado con éxito ✓', 'success');
+          };
+        } catch (err) {
+          showToast('El archivo seleccionado no es un respaldo JSON válido.', 'error');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    /* -------------------------------------------------------------------
+       14. NAVEGACIÓN, MODALES Y TOASTS
+    ------------------------------------------------------------------- */
+    function switchTab(tabName) {
+      appState.activeTab = tabName;
+
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+      const activeSec = document.getElementById(`tab-${tabName}`);
+      if (activeSec) activeSec.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-desktop-btn').forEach(btn => {
+        const active = btn.dataset.nav === tabName;
+        btn.className = `nav-desktop-btn touch-btn px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 ${
+          active ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+        }`;
+      });
+
+      document.querySelectorAll('.nav-mobile-btn').forEach(btn => {
+        const active = btn.dataset.navM === tabName;
+        btn.className = `nav-mobile-btn relative flex flex-col items-center justify-center gap-0.5 transition ${
+          active ? 'text-amber-600 scale-105' : 'text-slate-400 hover:text-slate-700'
+        }`;
+      });
+
+      if (tabName === 'pdf') {
+        syncFormToDraft();
+        renderPDFDocument();
+      } else if (tabName === 'historial') {
+        renderHistory();
+      } else if (tabName === 'ajustes') {
+        populateConfigForm();
+      }
+    }
+
+    function openModal(html) {
+      document.getElementById('modal-card').innerHTML = html;
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const palette = {
+        success: 'bg-emerald-600 text-white border-emerald-500',
+        error: 'bg-rose-600 text-white border-rose-500',
+        info: 'bg-slate-900 text-white border-slate-700'
+      };
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm font-bold text-center animate-fade-up ${palette[type] || palette.info}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2800);
+    }
+
+    /* -------------------------------------------------------------------
+       15. INICIALIZACIÓN DE LA APLICACIÓN
+    ------------------------------------------------------------------- */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      appState.draft = createEmptyDraft('matrimonio');
+      refreshBrandUI();
+      renderCategoryGrid();
+      renderQuickExtrasChips();
+      populateFormFromDraft();
+      renderActiveExtras();
+      updateLiveSummary();
+      updateHistoryBadges();
+      switchTab('cotizar');
+
+      // Si ya tienen conectada la nube, sincroniza discretamente al abrir la app
+      if ((appState.config.gasUrl || '').startsWith('https://script.google.com/')) {
+        syncQuotesFromCloud(true);
+      }
+    });
+  </script>
+</body>
+</html>
