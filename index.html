@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="logo.png">
   <link rel="icon" type="image/png" href="logo.png">
 
-  <title>Animaciones Divertidas - Cotizador Profesional</title>
+  <title>Animaciones Divertidas - Propuesta de Servicio </title>
 
   <!-- Google Fonts: Plus Jakarta Sans (UI & Moderno) + Playfair Display (Estilo Gala) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -356,7 +356,7 @@
               </div>
 
               <div>
-                <label for="q-service-desc" class="block text-xs font-bold text-slate-600 mb-1.5">Descripción Profesional Detallada (editable para cada cliente)</label>
+                <label for="q-service-desc" class="block text-xs font-bold text-slate-600 mb-1.5">Descripción  Detallada (editable para cada cliente)</label>
                 <textarea id="q-service-desc" rows="4" oninput="syncFormToDraft()" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 px-3.5 py-2.5 outline-none transition leading-relaxed"></textarea>
               </div>
 
@@ -375,7 +375,7 @@
                 <div class="flex items-center justify-between gap-3 bg-slate-50/80 rounded-xl p-3 border border-slate-200/70">
                   <div>
                     <p class="text-sm font-bold text-slate-800">🎥 Incluir videollamada previa de planificación y asesoría por WhatsApp</p>
-                    <p class="text-xs text-slate-500">Destaca este valor agregado profesional en la propuesta PDF.</p>
+                    <p class="text-xs text-slate-500">Destaca este valor agregado  en la propuesta PDF.</p>
                   </div>
                   <button type="button" id="toggle-videocall" onclick="toggleDraftFlag('includeVideocall')" role="switch" aria-checked="true" class="ios-switch active">
                     <span class="ios-switch-knob"></span>
@@ -2846,7 +2846,7 @@
     function getAppsScriptCode() {
       const calName = (appState.config.calendarName || 'Animaciones Divertidas').replace(/"/g, '\\"');
       return `// ======================================================================
-// GOOGLE APPS SCRIPT · ANIMACIONES DIVERTIDAS - COTIZADOR PROFESIONAL
+// GOOGLE APPS SCRIPT · ANIMACIONES DIVERTIDAS - Propuesta de Servicios
 // 1) Agenda automáticamente eventos en el calendario "${calName}"
 // 2) Guarda y lee cotizaciones en la hoja "Cotizaciones" para 2 iPhone
 // ======================================================================
@@ -3023,7 +3023,7 @@ function doPost(e) {
     // Respaldo JSON Exportar / Importar
     function exportBackupJSON() {
       const payload = {
-        app: 'Animaciones Divertidas - Cotizador Profesional',
+        app: 'Animaciones Divertidas - Propuesta de Servicios',
         exportedAt: new Date().toISOString(),
         config: appState.config,
         categories: appState.categories,
